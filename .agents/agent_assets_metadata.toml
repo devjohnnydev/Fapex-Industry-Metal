@@ -1,0 +1,26 @@
+uploads = []
+outputs = []
+
+[[generated]]
+id = "10GQPvWoOL-V36sK5GVWn"
+uri = "file://artifacts/fapex-website/public/images/hero-bg.png"
+type = "image"
+title = "Metal recycling facility hero"
+
+[[generated]]
+id = "C24vczqyN339bzKj1NYwv"
+uri = "file://artifacts/fapex-website/public/images/about-facility.png"
+type = "image"
+title = "Organized metal scraps"
+
+[[generated]]
+id = "u9nIGqRI8WEMaWMWJA34_"
+uri = "file://artifacts/fapex-website/public/images/sustainability.png"
+type = "image"
+title = "Circular economy concept"
+
+[[generated]]
+id = "62XQxKR0NtLffTZh1afik"
+uri = "file://artifacts/fapex-website/public/images/materials.png"
+type = "image"
+title = "Copper and steel materials"
