@@ -1,0 +1,80 @@
+You reached the start of the range
+Jun 8, 2026, 10:02 PM
+scheduling build on Metal builder "builder-dvhogn"
+unpacking archive
+13.2 MB
+81ms
+using build driver nixpacks-v1.41.0
+uploading snapshot
+12.4 MB
+196ms
+ 
+╔══════════════════════════════ Nixpacks v1.41.0 ══════════════════════════════╗
+║ setup      │ pkgs: nodejs_22                                                 ║
+║            │ cmds: corepack enable                                           ║
+║──────────────────────────────────────────────────────────────────────────────║
+║ install    │ pnpm install --frozen-lockfile --ignore-scripts                 ║
+║──────────────────────────────────────────────────────────────────────────────║
+║ build      │ BASE_PATH=/ PORT=3000 NODE_ENV=production pnpm --filter         ║
+║            │ @workspace/fapex-website run build                              ║
+║            │ NODE_ENV=production pnpm --filter @workspace/api-server run     ║
+║            │ build                                                           ║
+║──────────────────────────────────────────────────────────────────────────────║
+║ start      │ node --enable-source-maps artifacts/api-server/dist/index.mjs   ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+ 
+ 
+Saved output to:
+  snapshot-target-unpack
+
+internal
+load build definition from Dockerfile
+0ms
+
+internal
+load metadata for ghcr.io/railwayapp/nixpacks:ubuntu-1745885067
+210ms
+
+internal
+load .dockerignore
+0ms
+UndefinedVar: Usage of undefined variable '$NIXPACKS_PATH' (line 19)(https://docs.docker.com/go/dockerfile/rule/undefined-var/)
+ details: Variables should be defined before their use
+
+stage-0
+FROM ghcr.io/railwayapp/nixpacks:ubuntu-1745885067@sha256:d45c89d80e13d7ad0fd555b5130f22a866d9dd10e861f589932303ef2314c7de
+13ms
+
+internal
+load build context
+0ms
+
+stage-0
+RUN nix-env -if .nixpacks/nixpkgs-ffeebf0acf3ae8b29f8c7049cd911b9636efd7e7.nix && nix-collect-garbage -d cached
+0ms
+
+stage-0
+COPY .nixpacks/nixpkgs-ffeebf0acf3ae8b29f8c7049cd911b9636efd7e7.nix .nixpacks/nixpkgs-ffeebf0acf3ae8b29f8c7049cd911b9636efd7e7.nix cached
+0ms
+
+stage-0
+WORKDIR /app/ cached
+0ms
+
+stage-0
+COPY . /app/.
+1s
+
+stage-0
+RUN  corepack enable
+512ms
+
+stage-0
+COPY . /app/.
+452ms
+
+stage-0
+RUN pnpm install --frozen-lockfile --ignore-scripts
+659ms
+Node.js v22.11.0
+Build Failed: build daemon returned an error < failed to solve: process "/bin/bash -ol pipefail -c pnpm install --frozen-lockfile --ignore-scripts" did not complete successfully: exit code: 1 
