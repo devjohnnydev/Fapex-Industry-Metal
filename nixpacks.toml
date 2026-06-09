@@ -2,11 +2,11 @@
 nixPkgs = ["nodejs_22"]
 
 [phases.install]
-cmds = ["npm install -g pnpm@10.26.1 && pnpm install --ignore-scripts"]
+cmds = ["npm install -g pnpm@10.26.1 && PATH=$(npm bin -g):$PATH pnpm install --ignore-scripts"]
 
 [phases.build]
 cmds = [
-  "BASE_PATH=/ PORT=3000 NODE_ENV=production pnpm --filter @workspace/fapex-website run build && NODE_ENV=production pnpm --filter @workspace/api-server run build"
+  "PATH=$(npm bin -g):$PATH BASE_PATH=/ PORT=3000 NODE_ENV=production pnpm --filter @workspace/fapex-website run build && PATH=$(npm bin -g):$PATH NODE_ENV=production pnpm --filter @workspace/api-server run build"
 ]
 
 [start]
