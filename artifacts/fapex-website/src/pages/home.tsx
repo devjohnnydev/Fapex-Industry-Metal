@@ -158,8 +158,11 @@ export default function Home() {
           : "bg-transparent py-2"
       }`}>
         <div className="container mx-auto px-6 md:px-12 flex justify-between items-center">
-          <div className="flex items-center cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>
-            <img src="/fapex-logo-nobg.png" alt="Fapex" className="h-28 md:h-32 w-auto" />
+          <div className="flex flex-col cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>
+            <img src="/fapex-logo-nobg.png" alt="Fapex" className="h-16 md:h-20 w-auto" />
+            <span className="text-white/70 text-[10px] md:text-xs font-semibold tracking-widest uppercase -mt-1">
+              Comércio de Resíduos e Metais LTDA
+            </span>
           </div>
 
           <div className="hidden md:flex items-center gap-8">
