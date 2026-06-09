@@ -1,76 +1,82 @@
 import React, { useState, useEffect } from "react";
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
-import { 
-  Menu, X, ChevronRight, Phone, Mail, MapPin, 
-  Leaf, ShieldCheck, Factory, Recycle, Scale, 
-  TrendingUp, Truck, CheckCircle2, ArrowRight
+import {
+  Menu, X, Phone, Mail, MapPin,
+  Leaf, ShieldCheck, Factory, Recycle, Scale,
+  TrendingUp, CheckCircle2, ArrowRight, ChevronRight, Images
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import { apiJson } from "@/lib/api";
 
-// Animation Variants
+interface BlogPost {
+  id: number;
+  title: string;
+  excerpt: string;
+  imageUrl: string;
+  publishedAt: string;
+}
+interface GalleryPhoto {
+  id: number;
+  title: string;
+  imageUrl: string;
+}
+
 const fadeInUp = {
   hidden: { opacity: 0, y: 40 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
 };
-
 const staggerContainer = {
   hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.2
-    }
-  }
+  visible: { opacity: 1, transition: { staggerChildren: 0.15 } },
+};
+const scaleIn = {
+  hidden: { opacity: 0, scale: 0.93 },
+  visible: { opacity: 1, scale: 1, transition: { duration: 0.55, ease: "easeOut" } },
 };
 
-const scaleIn = {
-  hidden: { opacity: 0, scale: 0.9 },
-  visible: { opacity: 1, scale: 1, transition: { duration: 0.5, ease: "easeOut" } }
-};
+function formatDate(dateStr: string) {
+  try {
+    return new Date(dateStr).toLocaleDateString("pt-BR", { day: "2-digit", month: "long", year: "numeric" });
+  } catch { return ""; }
+}
 
 export default function Home() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
+  const [galleryPhotos, setGalleryPhotos] = useState<GalleryPhoto[]>([]);
   const { toast } = useToast();
 
   const { scrollYProgress } = useScroll();
-  const heroY = useTransform(scrollYProgress, [0, 0.2], ["0%", "50%"]);
-  const heroOpacity = useTransform(scrollYProgress, [0, 0.15], [1, 0]);
+  const heroY = useTransform(scrollYProgress, [0, 0.25], ["0%", "40%"]);
+  const heroOpacity = useTransform(scrollYProgress, [0, 0.2], [1, 0]);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
-    };
+    const handleScroll = () => setIsScrolled(window.scrollY > 50);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  useEffect(() => {
+    apiJson<BlogPost[]>("/blog-posts").then(setBlogPosts).catch(() => {});
+    apiJson<GalleryPhoto[]>("/gallery").then(setGalleryPhotos).catch(() => {});
+  }, []);
+
   const handleContactSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    toast({
-      title: "Mensagem enviada",
-      description: "Nossa equipe entrará em contato em breve.",
-    });
+    toast({ title: "Mensagem enviada!", description: "Nossa equipe entrará em contato em breve." });
+    (e.target as HTMLFormElement).reset();
   };
 
   const scrollToSection = (id: string) => {
     setMobileMenuOpen(false);
-    const element = document.getElementById(id);
-    if (element) {
-      const offset = 80;
-      const bodyRect = document.body.getBoundingClientRect().top;
-      const elementRect = element.getBoundingClientRect().top;
-      const elementPosition = elementRect - bodyRect;
-      const offsetPosition = elementPosition - offset;
-
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: "smooth"
-      });
+    const el = document.getElementById(id);
+    if (el) {
+      window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 80, behavior: "smooth" });
     }
   };
 
@@ -78,41 +84,34 @@ export default function Home() {
     { name: "Sobre", id: "sobre" },
     { name: "Serviços", id: "servicos" },
     { name: "Materiais", id: "materiais" },
-    { name: "Sustentabilidade", id: "sustentabilidade" },
+    { name: "Blog", id: "blog" },
+    { name: "Galeria", id: "galeria" },
   ];
 
   return (
-    <div className="min-h-screen bg-background text-foreground overflow-x-hidden font-sans">
-      {/* Navigation */}
-      <nav 
-        className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 border-b border-transparent ${
-          isScrolled ? "bg-background/90 backdrop-blur-md border-border/50 py-4 shadow-sm" : "bg-transparent py-6"
-        }`}
-      >
-        <div className="container mx-auto px-6 md:px-12 flex justify-between items-center">
-          <div className="flex items-center cursor-pointer" onClick={() => window.scrollTo({top: 0, behavior: "smooth"})}>
-            <img src="/fapex-logo-nobg.png" alt="Fapex Logo" className="h-16 md:h-20 w-auto" />
-          </div>
+    <div className="min-h-screen overflow-x-hidden font-sans" style={{ background: "#fff", color: "#111" }}>
 
+      {/* ── NAVIGATION ── */}
+      <nav className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${isScrolled ? "bg-[#111]/95 backdrop-blur-md py-3 shadow-lg" : "bg-transparent py-5"}`}>
+        <div className="container mx-auto px-6 md:px-12 flex justify-between items-center">
+          <div className="flex items-center cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>
+            <img src="/fapex-logo-nobg.png" alt="Fapex" className="h-14 md:h-16 w-auto" data-testid="img-logo-nav" />
+          </div>
           <div className="hidden md:flex items-center space-x-8">
             {navLinks.map((link) => (
-              <button 
-                key={link.id} 
-                onClick={() => scrollToSection(link.id)}
-                className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors uppercase tracking-wider"
-              >
+              <button key={link.id} onClick={() => scrollToSection(link.id)}
+                className="text-sm font-semibold text-white/80 hover:text-green-400 transition-colors uppercase tracking-wider"
+                data-testid={`link-nav-${link.id}`}>
                 {link.name}
               </button>
             ))}
-            <Button onClick={() => scrollToSection("contato")} className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-none px-6">
+            <Button onClick={() => scrollToSection("contato")}
+              className="bg-green-600 hover:bg-green-500 text-white rounded-none px-6 font-bold tracking-wide"
+              data-testid="button-nav-contact">
               Fale Conosco
             </Button>
           </div>
-
-          <button 
-            className="md:hidden text-foreground"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          >
+          <button className="md:hidden text-white" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
             {mobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
           </button>
         </div>
@@ -121,27 +120,17 @@ export default function Home() {
       {/* Mobile Menu */}
       <AnimatePresence>
         {mobileMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="fixed inset-0 z-40 bg-background/95 backdrop-blur-xl pt-24 px-6 pb-6 flex flex-col"
-          >
-            <div className="flex flex-col space-y-6 text-center mt-12">
+          <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}
+            className="fixed inset-0 z-40 bg-[#111] pt-24 px-6 pb-6 flex flex-col">
+            <div className="flex flex-col space-y-6 text-center mt-8">
               {navLinks.map((link) => (
-                <button 
-                  key={link.id} 
-                  onClick={() => scrollToSection(link.id)}
-                  className="text-xl font-medium text-foreground hover:text-primary transition-colors uppercase tracking-wider"
-                >
+                <button key={link.id} onClick={() => scrollToSection(link.id)}
+                  className="text-xl font-semibold text-white hover:text-green-400 transition-colors uppercase tracking-wider">
                   {link.name}
                 </button>
               ))}
-              <Button 
-                onClick={() => scrollToSection("contato")} 
-                size="lg"
-                className="mt-8 bg-primary text-primary-foreground hover:bg-primary/90 rounded-none w-full"
-              >
+              <Button onClick={() => scrollToSection("contato")} size="lg"
+                className="mt-4 bg-green-600 hover:bg-green-500 text-white rounded-none w-full font-bold">
                 Fale Conosco
               </Button>
             </div>
@@ -149,131 +138,105 @@ export default function Home() {
         )}
       </AnimatePresence>
 
-      {/* Hero Section */}
-      <section className="relative h-screen min-h-[600px] flex items-center justify-center overflow-hidden pt-20">
-        <motion.div 
-          className="absolute inset-0 z-0"
-          style={{ y: heroY, opacity: heroOpacity }}
-        >
-          <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-background/60 to-background z-10" />
-          <div className="absolute inset-0 bg-gradient-to-r from-background/90 to-transparent z-10" />
-          <img 
-            src="/images/hero-bg.png" 
-            alt="Fapex Industrial Facility" 
-            className="w-full h-full object-cover object-center"
-          />
+      {/* ── HERO ── */}
+      <section className="relative h-screen min-h-[640px] flex items-center overflow-hidden bg-[#0a0a0a]">
+        <motion.div className="absolute inset-0 z-0" style={{ y: heroY, opacity: heroOpacity }}>
+          <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0a]/50 via-[#0a0a0a]/60 to-[#0a0a0a] z-10" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#0a0a0a]/85 to-transparent z-10" />
+          <img src="/images/hero-bg.png" alt="Fapex" className="w-full h-full object-cover object-center" />
         </motion.div>
 
-        <div className="container mx-auto px-6 md:px-12 relative z-20">
-          <motion.div 
-            initial="hidden"
-            animate="visible"
-            variants={staggerContainer}
-            className="max-w-4xl"
-          >
-            
-            <motion.h1 
-              variants={fadeInUp}
-              className="text-5xl md:text-7xl lg:text-8xl font-black text-white leading-[1.1] tracking-tight mb-6"
-            >
-              FORÇA INDUSTRIAL.<br />
-              <span className="text-primary">IMPACTO AMBIENTAL.</span>
+        <div className="container mx-auto px-6 md:px-12 relative z-20 pt-24">
+          <motion.div initial="hidden" animate="visible" variants={staggerContainer} className="max-w-3xl">
+            <motion.div variants={fadeInUp} className="flex items-center gap-3 mb-6">
+              <div className="h-[3px] w-10 bg-green-400" />
+              <span className="text-green-400 text-sm font-semibold uppercase tracking-widest">Fapex Resíduos e Metais</span>
+            </motion.div>
+
+            <motion.h1 variants={fadeInUp}
+              className="text-5xl md:text-7xl lg:text-8xl font-black text-white leading-[1.05] tracking-tight mb-6">
+              FORÇA<br />
+              <span className="text-green-400">INDUSTRIAL.</span><br />
+              <span className="text-green-400">IMPACTO</span><br />
+              <span className="text-white">AMBIENTAL.</span>
             </motion.h1>
-            
-            <motion.p 
-              variants={fadeInUp}
-              className="text-lg md:text-xl text-foreground/80 max-w-2xl mb-10 leading-relaxed"
-            >
-              Líder na compra, venda e gestão de sucatas metálicas e resíduos industriais. 
+
+            <motion.p variants={fadeInUp} className="text-lg md:text-xl text-white/70 max-w-xl mb-10 leading-relaxed">
+              Líder na compra, venda e gestão de sucatas metálicas e resíduos industriais.
               Transformamos passivos em economia circular com total conformidade legal.
             </motion.p>
-            
+
             <motion.div variants={fadeInUp} className="flex flex-col sm:flex-row gap-4">
-              <Button onClick={() => scrollToSection("contato")} size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 h-14 px-8 text-base rounded-none font-bold tracking-wide group">
+              <Button onClick={() => scrollToSection("contato")} size="lg"
+                className="bg-green-600 hover:bg-green-500 text-white h-14 px-8 text-base rounded-none font-bold tracking-wide group"
+                data-testid="button-hero-cta">
                 SOLICITAR COTAÇÃO
                 <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
               </Button>
-              <Button onClick={() => scrollToSection("sobre")} size="lg" variant="outline" className="border-border hover:bg-secondary h-14 px-8 text-base rounded-none font-bold tracking-wide">
+              <Button onClick={() => scrollToSection("sobre")} size="lg" variant="outline"
+                className="border-white/30 text-white hover:bg-white/10 h-14 px-8 text-base rounded-none font-bold tracking-wide">
                 CONHEÇA A FAPEX
               </Button>
             </motion.div>
           </motion.div>
         </div>
 
-        {/* Scroll indicator */}
-        <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.5, duration: 1 }}
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.5, duration: 1 }}
           className="absolute bottom-10 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center cursor-pointer"
-          onClick={() => scrollToSection("sobre")}
-        >
-          <span className="text-xs text-foreground/50 uppercase tracking-widest mb-2 font-medium">Rolar</span>
-          <div className="w-[1px] h-16 bg-border relative overflow-hidden">
-            <motion.div 
-              className="absolute top-0 left-0 w-full h-1/2 bg-primary"
+          onClick={() => scrollToSection("sobre")}>
+          <span className="text-xs text-white/40 uppercase tracking-widest mb-2 font-medium">Rolar</span>
+          <div className="w-[1px] h-14 bg-white/20 relative overflow-hidden">
+            <motion.div className="absolute top-0 left-0 w-full h-1/2 bg-green-400"
               animate={{ top: ["-50%", "100%"] }}
-              transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }}
-            />
+              transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }} />
           </div>
         </motion.div>
       </section>
 
-      {/* Sobre Nós */}
-      <section id="sobre" className="py-24 md:py-32 bg-background relative border-t border-border">
+      {/* ── MATERIAIS DESTAQUE BANNER ── */}
+      <div className="bg-green-700 py-4">
+        <div className="container mx-auto px-6 md:px-12">
+          <p className="text-white text-sm font-medium text-center">
+            <span className="font-bold">Compramos e vendemos:</span>
+            {" "}Aço · Ferro · Cobre · Alumínio · Latão · Bronze · Zinco · Aço Inox · Resíduos Industriais
+          </p>
+        </div>
+      </div>
+
+      {/* ── SOBRE NÓS (WHITE) ── */}
+      <section id="sobre" className="py-20 md:py-28 bg-white">
         <div className="container mx-auto px-6 md:px-12">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-            <motion.div 
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, margin: "-100px" }}
-              variants={staggerContainer}
-            >
-              <motion.div variants={fadeInUp} className="flex items-center space-x-3 mb-6">
-                <ShieldCheck className="text-primary h-6 w-6" />
-                <span className="text-primary font-semibold tracking-widest uppercase text-sm">Nossa História</span>
+            <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-80px" }} variants={staggerContainer}>
+              <motion.div variants={fadeInUp} className="flex items-center gap-3 mb-4">
+                <div className="h-[3px] w-10 bg-green-600" />
+                <span className="text-green-700 font-semibold tracking-widest uppercase text-sm">Sobre a Fapex</span>
               </motion.div>
-              
-              <motion.h2 variants={fadeInUp} className="text-4xl md:text-5xl font-bold mb-8 leading-tight">
-                EXPERIÊNCIA E SOLIDEZ NO MERCADO DE <span className="text-primary">RECICLAGEM</span>
+              <motion.h2 variants={fadeInUp} className="text-3xl md:text-5xl font-bold mb-6 leading-tight text-gray-900">
+                Experiência e solidez no mercado de <span className="text-green-600">reciclagem</span>
               </motion.h2>
-              
-              <motion.p variants={fadeInUp} className="text-foreground/70 text-lg mb-6 leading-relaxed">
-                A Fapex Indústria e Comércio de Resíduos e Metais atua há anos no mercado oferecendo soluções integradas para a gestão de passivos industriais.
+              <motion.p variants={fadeInUp} className="text-gray-600 text-lg mb-5 leading-relaxed">
+                A <strong>Fapex Indústria e Comércio de Resíduos e Metais</strong> atua há anos no mercado oferecendo soluções integradas para a gestão de passivos industriais.
               </motion.p>
-              
-              <motion.p variants={fadeInUp} className="text-foreground/70 text-lg mb-10 leading-relaxed">
+              <motion.p variants={fadeInUp} className="text-gray-600 text-lg mb-8 leading-relaxed">
                 Somos parceiros estratégicos de grandes indústrias, garantindo que materiais recicláveis retornem à cadeia produtiva de forma eficiente, rentável e ambientalmente responsável, com total rastreabilidade.
               </motion.p>
-
-              <motion.div variants={fadeInUp} className="grid grid-cols-2 gap-8 border-t border-border pt-8">
-                <div>
-                  <h4 className="text-4xl font-black text-white mb-2">100%</h4>
-                  <p className="text-sm text-foreground/60 uppercase tracking-wider font-medium">Conformidade Legal</p>
-                </div>
-                <div>
-                  <h4 className="text-4xl font-black text-white mb-2">+10k</h4>
-                  <p className="text-sm text-foreground/60 uppercase tracking-wider font-medium">Ton. Processadas</p>
-                </div>
+              <motion.div variants={fadeInUp} className="grid grid-cols-3 gap-6 border-t border-gray-200 pt-8">
+                {[{ n: "100%", label: "Conformidade Legal" }, { n: "+10k", label: "Ton. Processadas" }, { n: "CNPJ", label: "60.147.676/0001-34" }].map((s) => (
+                  <div key={s.label}>
+                    <p className="text-3xl font-black text-green-600 mb-1">{s.n}</p>
+                    <p className="text-xs text-gray-500 uppercase tracking-wider font-medium">{s.label}</p>
+                  </div>
+                ))}
               </motion.div>
             </motion.div>
 
-            <motion.div 
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, margin: "-100px" }}
-              variants={scaleIn}
-              className="relative h-[600px] w-full"
-            >
-              <div className="absolute inset-0 bg-primary/20 translate-x-4 translate-y-4 z-0"></div>
-              <img 
-                src="/images/about-facility.png" 
-                alt="Fapex Operations" 
-                className="absolute inset-0 w-full h-full object-cover z-10 grayscale-[30%] contrast-125"
-              />
-              <div className="absolute bottom-0 left-0 bg-background border-t-2 border-r-2 border-primary p-6 z-20 w-3/4">
-                <p className="text-lg font-bold leading-tight">
-                  "Estrutura completa e equipe especializada para o processamento de qualquer volume de sucata."
+            <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={scaleIn} className="relative h-[480px]">
+              <div className="absolute inset-0 bg-green-600/10 translate-x-3 translate-y-3 rounded" />
+              <img src="/images/about-facility.png" alt="Fapex" className="absolute inset-0 w-full h-full object-cover rounded shadow-xl" />
+              <div className="absolute bottom-0 left-0 bg-green-700 p-5 w-3/4 rounded-tr">
+                <p className="text-white font-semibold text-sm leading-snug">
+                  "Estrutura completa e equipe especializada para qualquer volume de sucata."
                 </p>
               </div>
             </motion.div>
@@ -281,284 +244,287 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Serviços */}
-      <section id="servicos" className="py-24 md:py-32 bg-secondary/30 relative">
+      {/* ── SERVIÇOS (LIGHT GRAY) ── */}
+      <section id="servicos" className="py-20 md:py-28 bg-gray-50 border-t border-gray-100">
         <div className="container mx-auto px-6 md:px-12">
-          <div className="text-center max-w-3xl mx-auto mb-20">
-            <motion.div 
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              variants={fadeInUp}
-              className="flex items-center justify-center space-x-3 mb-6"
-            >
-              <Factory className="text-primary h-6 w-6" />
-              <span className="text-primary font-semibold tracking-widest uppercase text-sm">O Que Fazemos</span>
+          <div className="text-center max-w-3xl mx-auto mb-16">
+            <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeInUp}
+              className="flex items-center justify-center gap-3 mb-4">
+              <div className="h-[3px] w-10 bg-green-600" />
+              <span className="text-green-700 font-semibold tracking-widest uppercase text-sm">O que fazemos</span>
+              <div className="h-[3px] w-10 bg-green-600" />
             </motion.div>
-            
-            <motion.h2 
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              variants={fadeInUp}
-              className="text-4xl md:text-5xl font-bold mb-6 leading-tight"
-            >
-              SOLUÇÕES COMPLETAS EM <span className="text-primary">GESTÃO DE RESÍDUOS</span>
+            <motion.h2 initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeInUp}
+              className="text-3xl md:text-5xl font-bold text-gray-900 leading-tight">
+              Soluções completas em <span className="text-green-600">gestão de resíduos</span>
             </motion.h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[
-              {
-                icon: <Scale className="h-10 w-10 text-primary mb-6" />,
-                title: "Compra e Venda",
-                desc: "Comercialização em grande escala de sucatas metálicas ferrosas e não-ferrosas com as melhores condições de mercado."
-              },
-              {
-                icon: <Recycle className="h-10 w-10 text-primary mb-6" />,
-                title: "Gestão e Destinação",
-                desc: "Coleta, transporte e destinação ambientalmente correta de resíduos industriais com emissão de certificados."
-              },
-              {
-                icon: <TrendingUp className="h-10 w-10 text-primary mb-6" />,
-                title: "Assessoria",
-                desc: "Consultoria especializada para empresas no gerenciamento inteligente de seus resíduos e passivos."
-              }
-            ].map((service, idx) => (
-              <motion.div 
-                key={idx}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true }}
-                variants={{
-                  hidden: { opacity: 0, y: 30 },
-                  visible: { opacity: 1, y: 0, transition: { delay: idx * 0.1, duration: 0.5 } }
-                }}
-                className="bg-background border border-border p-10 hover:border-primary/50 transition-colors group relative overflow-hidden"
-              >
-                <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
-                  {service.icon}
+              { icon: Scale, title: "Compra e Venda", desc: "Comercialização em grande escala de sucatas metálicas ferrosas e não-ferrosas com as melhores condições de mercado." },
+              { icon: Recycle, title: "Gestão e Destinação", desc: "Coleta, transporte e destinação ambientalmente correta de resíduos industriais com emissão de certificados CADRI e CDF." },
+              { icon: TrendingUp, title: "Assessoria", desc: "Consultoria especializada para empresas no gerenciamento inteligente de resíduos e passivos com total conformidade legal." },
+            ].map(({ icon: Icon, title, desc }, i) => (
+              <motion.div key={i} initial="hidden" whileInView="visible" viewport={{ once: true }}
+                variants={{ hidden: { opacity: 0, y: 30 }, visible: { opacity: 1, y: 0, transition: { delay: i * 0.1, duration: 0.5 } } }}
+                className="bg-white border border-gray-200 p-8 hover:border-green-500 hover:shadow-lg transition-all group rounded-sm"
+                data-testid={`card-service-${i}`}>
+                <div className="p-3 bg-green-50 rounded-lg w-fit mb-5 group-hover:bg-green-100 transition-colors">
+                  <Icon className="h-7 w-7 text-green-600" />
                 </div>
-                <div className="relative z-10">
-                  {service.icon}
-                  <h3 className="text-2xl font-bold mb-4">{service.title}</h3>
-                  <p className="text-foreground/70 leading-relaxed">{service.desc}</p>
+                <h3 className="text-xl font-bold mb-3 text-gray-900">{title}</h3>
+                <p className="text-gray-500 leading-relaxed text-sm">{desc}</p>
+                <div className="mt-5 flex items-center text-green-600 text-sm font-semibold group-hover:gap-2 gap-1 transition-all">
+                  <span>Saiba mais</span><ChevronRight className="h-4 w-4" />
                 </div>
-                <div className="absolute bottom-0 left-0 h-1 w-0 bg-primary transition-all duration-300 group-hover:w-full"></div>
               </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Materiais */}
-      <section id="materiais" className="py-24 md:py-32 bg-background border-y border-border">
+      {/* ── MATERIAIS (WHITE) ── */}
+      <section id="materiais" className="py-20 md:py-28 bg-white border-t border-gray-100">
         <div className="container mx-auto px-6 md:px-12">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
-            <div className="lg:col-span-5 flex flex-col justify-center">
-              <motion.div 
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true }}
-                variants={staggerContainer}
-              >
-                <motion.h2 variants={fadeInUp} className="text-4xl md:text-5xl font-bold mb-8 leading-tight">
-                  MATERIAIS QUE <span className="text-primary">PROCESSAMOS</span>
-                </motion.h2>
-                <motion.p variants={fadeInUp} className="text-foreground/70 text-lg mb-8 leading-relaxed">
-                  Trabalhamos com uma ampla variedade de sucatas industriais, classificando e processando materiais para reintegração na indústria siderúrgica e metalúrgica.
-                </motion.p>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={scaleIn}
+              className="relative h-[500px] order-2 lg:order-1">
+              <img src="/images/materials.png" alt="Materiais" className="w-full h-full object-cover rounded shadow-xl" />
+            </motion.div>
 
-                <div className="space-y-8">
-                  <motion.div variants={fadeInUp}>
-                    <h3 className="text-xl font-bold mb-4 text-white border-b border-border pb-2 inline-block">Metais Ferrosos</h3>
-                    <ul className="space-y-3">
-                      {['Aço', 'Ferro Fundido', 'Aço Inox', 'Estamparia'].map((item, i) => (
-                        <li key={i} className="flex items-center text-foreground/80">
-                          <CheckCircle2 className="h-5 w-5 text-primary mr-3" />
-                          <span className="text-lg">{item}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </motion.div>
-                  
-                  <motion.div variants={fadeInUp}>
-                    <h3 className="text-xl font-bold mb-4 text-white border-b border-border pb-2 inline-block">Metais Não-Ferrosos</h3>
-                    <ul className="grid grid-cols-2 gap-3">
-                      {['Cobre', 'Alumínio', 'Latão', 'Bronze', 'Zinco', 'Chumbo'].map((item, i) => (
-                        <li key={i} className="flex items-center text-foreground/80">
-                          <CheckCircle2 className="h-5 w-5 text-primary mr-3" />
-                          <span className="text-lg">{item}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </motion.div>
-                </div>
+            <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-80px" }} variants={staggerContainer}
+              className="order-1 lg:order-2">
+              <motion.div variants={fadeInUp} className="flex items-center gap-3 mb-4">
+                <div className="h-[3px] w-10 bg-green-600" />
+                <span className="text-green-700 font-semibold tracking-widest uppercase text-sm">Materiais que compramos</span>
               </motion.div>
-            </div>
-            
-            <div className="lg:col-span-7">
-              <motion.div 
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true }}
-                variants={scaleIn}
-                className="h-full min-h-[500px] w-full relative"
-              >
-                <img 
-                  src="/images/materials.png" 
-                  alt="Materiais Metálicos" 
-                  className="absolute inset-0 w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent"></div>
-              </motion.div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Sustentabilidade */}
-      <section id="sustentabilidade" className="py-24 md:py-32 relative overflow-hidden">
-        <div className="absolute inset-0 z-0">
-          <img 
-            src="/images/sustainability.png" 
-            alt="Sustentabilidade" 
-            className="w-full h-full object-cover opacity-20"
-          />
-          <div className="absolute inset-0 bg-background/90 z-10"></div>
-        </div>
-
-        <div className="container mx-auto px-6 md:px-12 relative z-20">
-          <div className="max-w-4xl mx-auto text-center">
-            <motion.div 
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              variants={staggerContainer}
-            >
-              <motion.div variants={fadeInUp} className="flex items-center justify-center space-x-3 mb-6">
-                <Leaf className="text-primary h-8 w-8" />
-              </motion.div>
-              
-              <motion.h2 variants={fadeInUp} className="text-4xl md:text-6xl font-bold mb-8 leading-tight">
-                COMPROMISSO COM O <span className="text-primary">FUTURO</span>
+              <motion.h2 variants={fadeInUp} className="text-3xl md:text-5xl font-bold mb-6 leading-tight text-gray-900">
+                Ampla variedade de <span className="text-green-600">sucatas industriais</span>
               </motion.h2>
-              
-              <motion.p variants={fadeInUp} className="text-xl text-foreground/80 mb-12 leading-relaxed">
-                A reciclagem de metais reduz em até 90% a extração de minérios e economiza quantidades massivas de energia. Na Fapex, a sustentabilidade não é marketing, é o nosso modelo de negócio. 
-                Cada tonelada processada por nós é uma vitória para a economia circular.
+              <motion.p variants={fadeInUp} className="text-gray-500 text-base mb-8 leading-relaxed">
+                Classificamos e processamos materiais para reintegração na indústria siderúrgica e metalúrgica com total rastreabilidade e melhores preços.
               </motion.p>
-              
-              <motion.div variants={fadeInUp} className="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
-                <div className="bg-secondary/50 border border-border p-6 backdrop-blur-sm">
-                  <h4 className="text-xl font-bold mb-2 text-white">Rastreabilidade</h4>
-                  <p className="text-foreground/70">Controle total desde a coleta até a destinação final, garantindo transparência.</p>
-                </div>
-                <div className="bg-secondary/50 border border-border p-6 backdrop-blur-sm">
-                  <h4 className="text-xl font-bold mb-2 text-white">Certificação</h4>
-                  <p className="text-foreground/70">Emissão de CADRI e CDF, assegurando que sua empresa atenda todas as normas.</p>
-                </div>
-                <div className="bg-secondary/50 border border-border p-6 backdrop-blur-sm">
-                  <h4 className="text-xl font-bold mb-2 text-white">Zero Desperdício</h4>
-                  <p className="text-foreground/70">Foco máximo na valorização e reaproveitamento de 100% dos materiais recebidos.</p>
-                </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+                <motion.div variants={fadeInUp}>
+                  <h3 className="font-bold text-gray-900 mb-3 pb-2 border-b-2 border-green-500 inline-block">Metais Ferrosos</h3>
+                  <ul className="space-y-2 mt-3">
+                    {["Aço", "Ferro Fundido", "Aço Inox", "Estamparia"].map((item) => (
+                      <li key={item} className="flex items-center gap-2 text-gray-600">
+                        <CheckCircle2 className="h-4 w-4 text-green-500 shrink-0" />{item}
+                      </li>
+                    ))}
+                  </ul>
+                </motion.div>
+                <motion.div variants={fadeInUp}>
+                  <h3 className="font-bold text-gray-900 mb-3 pb-2 border-b-2 border-green-500 inline-block">Metais Não-Ferrosos</h3>
+                  <ul className="space-y-2 mt-3">
+                    {["Cobre", "Alumínio", "Latão", "Bronze", "Zinco", "Chumbo"].map((item) => (
+                      <li key={item} className="flex items-center gap-2 text-gray-600">
+                        <CheckCircle2 className="h-4 w-4 text-green-500 shrink-0" />{item}
+                      </li>
+                    ))}
+                  </ul>
+                </motion.div>
+              </div>
+
+              <motion.div variants={fadeInUp} className="mt-8 p-4 bg-amber-50 border border-amber-200 rounded text-sm text-amber-800">
+                <strong>Não trabalhamos com:</strong> Papelão, madeira, vidro, plástico, eletrodoméstico e sucata automotiva.
               </motion.div>
             </motion.div>
           </div>
         </div>
       </section>
 
-      {/* Contato */}
-      <section id="contato" className="py-24 md:py-32 bg-background border-t border-border">
+      {/* ── SUSTENTABILIDADE (DARK GREEN) ── */}
+      <section id="sustentabilidade" className="py-20 md:py-28 bg-green-800 relative overflow-hidden">
+        <div className="absolute inset-0 opacity-10">
+          <img src="/images/sustainability.png" alt="" className="w-full h-full object-cover" />
+        </div>
+        <div className="container mx-auto px-6 md:px-12 relative z-10">
+          <div className="max-w-4xl mx-auto text-center">
+            <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={staggerContainer}>
+              <motion.div variants={fadeInUp} className="flex justify-center mb-4">
+                <Leaf className="text-green-300 h-10 w-10" />
+              </motion.div>
+              <motion.h2 variants={fadeInUp} className="text-4xl md:text-6xl font-bold mb-6 text-white leading-tight">
+                Compromisso com o <span className="text-green-300">futuro</span>
+              </motion.h2>
+              <motion.p variants={fadeInUp} className="text-xl text-white/75 mb-12 leading-relaxed">
+                A reciclagem de metais reduz em até <strong className="text-green-300">90%</strong> a extração de minérios. Na Fapex, a sustentabilidade não é marketing — é o nosso modelo de negócio.
+              </motion.p>
+              <motion.div variants={staggerContainer} className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                {[
+                  { icon: ShieldCheck, title: "Rastreabilidade", desc: "Controle total desde a coleta até a destinação final com total transparência." },
+                  { icon: Factory, title: "Certificação", desc: "Emissão de CADRI e CDF, garantindo conformidade ambiental para sua empresa." },
+                  { icon: Recycle, title: "Zero Desperdício", desc: "Foco na valorização e reaproveitamento de 100% dos materiais recebidos." },
+                ].map(({ icon: Icon, title, desc }) => (
+                  <motion.div key={title} variants={fadeInUp}
+                    className="bg-white/10 backdrop-blur border border-white/20 p-6 rounded text-left">
+                    <Icon className="h-7 w-7 text-green-300 mb-3" />
+                    <h4 className="text-white font-bold text-lg mb-2">{title}</h4>
+                    <p className="text-white/65 text-sm leading-relaxed">{desc}</p>
+                  </motion.div>
+                ))}
+              </motion.div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── BLOG (WHITE) ── */}
+      <section id="blog" className="py-20 md:py-28 bg-white border-t border-gray-100">
+        <div className="container mx-auto px-6 md:px-12">
+          <div className="flex items-end justify-between mb-12">
+            <div>
+              <div className="flex items-center gap-3 mb-3">
+                <div className="h-[3px] w-10 bg-green-600" />
+                <span className="text-green-700 font-semibold tracking-widest uppercase text-sm">Notícias</span>
+              </div>
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900">Blog Fapex</h2>
+            </div>
+          </div>
+
+          {blogPosts.length === 0 ? (
+            <div className="text-center py-16 text-gray-400">
+              <p className="text-lg">Em breve publicaremos conteúdo sobre reciclagem e metais.</p>
+              <p className="text-sm mt-2">Acompanhe nossas novidades!</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {blogPosts.slice(0, 6).map((post, i) => (
+                <motion.article key={post.id} initial="hidden" whileInView="visible" viewport={{ once: true }}
+                  variants={{ hidden: { opacity: 0, y: 30 }, visible: { opacity: 1, y: 0, transition: { delay: i * 0.08, duration: 0.5 } } }}
+                  className="group border border-gray-200 rounded overflow-hidden hover:shadow-xl transition-all"
+                  data-testid={`card-blog-${post.id}`}>
+                  <div className="overflow-hidden h-48 bg-gray-100">
+                    {post.imageUrl ? (
+                      <img src={post.imageUrl} alt={post.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                    ) : (
+                      <div className="w-full h-full bg-green-50 flex items-center justify-center">
+                        <Factory className="h-12 w-12 text-green-200" />
+                      </div>
+                    )}
+                  </div>
+                  <div className="p-5">
+                    {post.publishedAt && (
+                      <p className="text-green-600 text-xs font-semibold uppercase tracking-wider mb-2">{formatDate(post.publishedAt)}</p>
+                    )}
+                    <h3 className="font-bold text-gray-900 text-lg leading-snug mb-3 group-hover:text-green-700 transition-colors">
+                      {post.title}
+                    </h3>
+                    {post.excerpt && <p className="text-gray-500 text-sm leading-relaxed line-clamp-2">{post.excerpt} [...]</p>}
+                  </div>
+                </motion.article>
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* ── GALERIA (LIGHT GRAY) ── */}
+      {galleryPhotos.length > 0 && (
+        <section id="galeria" className="py-20 md:py-28 bg-gray-50 border-t border-gray-100">
+          <div className="container mx-auto px-6 md:px-12">
+            <div className="flex items-end justify-between mb-12">
+              <div>
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="h-[3px] w-10 bg-green-600" />
+                  <span className="text-green-700 font-semibold tracking-widest uppercase text-sm">Instalações</span>
+                </div>
+                <h2 className="text-3xl md:text-4xl font-bold text-gray-900">Galeria de Fotos</h2>
+              </div>
+              <Images className="h-8 w-8 text-green-500 opacity-40" />
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+              {galleryPhotos.slice(0, 8).map((photo, i) => (
+                <motion.div key={photo.id} initial="hidden" whileInView="visible" viewport={{ once: true }}
+                  variants={{ hidden: { opacity: 0, scale: 0.95 }, visible: { opacity: 1, scale: 1, transition: { delay: i * 0.06, duration: 0.4 } } }}
+                  className="group relative overflow-hidden rounded aspect-square bg-gray-200"
+                  data-testid={`card-gallery-${photo.id}`}>
+                  <img src={photo.imageUrl} alt={photo.title || "Fapex"} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                  {photo.title && (
+                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-3">
+                      <span className="text-white text-sm font-medium">{photo.title}</span>
+                    </div>
+                  )}
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ── CONTATO (DARK) ── */}
+      <section id="contato" className="py-20 md:py-28 bg-[#111]">
         <div className="container mx-auto px-6 md:px-12">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
-            <motion.div 
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              variants={staggerContainer}
-            >
-              <motion.h2 variants={fadeInUp} className="text-4xl md:text-5xl font-bold mb-6 leading-tight">
-                VAMOS FAZER <span className="text-primary">NEGÓCIO.</span>
+            <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={staggerContainer}>
+              <motion.div variants={fadeInUp} className="flex items-center gap-3 mb-4">
+                <div className="h-[3px] w-10 bg-green-600" />
+                <span className="text-green-400 font-semibold tracking-widest uppercase text-sm">Entre em Contato</span>
+              </motion.div>
+              <motion.h2 variants={fadeInUp} className="text-4xl md:text-5xl font-bold mb-6 leading-tight text-white">
+                Vamos fazer <span className="text-green-400">negócio.</span>
               </motion.h2>
-              <motion.p variants={fadeInUp} className="text-foreground/70 text-lg mb-10 leading-relaxed max-w-lg">
+              <motion.p variants={fadeInUp} className="text-white/60 text-lg mb-10 leading-relaxed max-w-lg">
                 Seja para vender suas sucatas ou estruturar um plano de gestão de resíduos, nossa equipe está pronta para atender sua indústria.
               </motion.p>
 
-              <div className="space-y-8">
-                <motion.div variants={fadeInUp} className="flex items-start">
-                  <div className="bg-secondary p-4 mr-6">
-                    <MapPin className="h-6 w-6 text-primary" />
-                  </div>
-                  <div>
-                    <h4 className="text-sm text-foreground/50 uppercase tracking-widest font-bold mb-1">Localização</h4>
-                    <p className="text-lg font-medium text-white">São Paulo, SP - Brasil</p>
-                  </div>
-                </motion.div>
-
-                <motion.div variants={fadeInUp} className="flex items-start">
-                  <div className="bg-secondary p-4 mr-6">
-                    <Phone className="h-6 w-6 text-primary" />
-                  </div>
-                  <div>
-                    <h4 className="text-sm text-foreground/50 uppercase tracking-widest font-bold mb-1">Telefone</h4>
-                    <p className="text-lg font-medium text-white">(11) 0000-0000</p>
-                  </div>
-                </motion.div>
-
-                <motion.div variants={fadeInUp} className="flex items-start">
-                  <div className="bg-secondary p-4 mr-6">
-                    <Mail className="h-6 w-6 text-primary" />
-                  </div>
-                  <div>
-                    <h4 className="text-sm text-foreground/50 uppercase tracking-widest font-bold mb-1">E-mail</h4>
-                    <p className="text-lg font-medium text-white">contato@fapex.com.br</p>
-                  </div>
-                </motion.div>
-                
-                <motion.div variants={fadeInUp} className="pt-6 border-t border-border mt-6">
-                  <p className="text-sm text-foreground/60 font-mono">CNPJ: 60.147.676/0001-34</p>
-                </motion.div>
+              <div className="space-y-6">
+                {[
+                  { icon: MapPin, label: "Localização", value: "São Paulo, SP - Brasil" },
+                  { icon: Phone, label: "Telefone", value: "(11) 0000-0000" },
+                  { icon: Mail, label: "E-mail", value: "contato@fapex.com.br" },
+                ].map(({ icon: Icon, label, value }) => (
+                  <motion.div key={label} variants={fadeInUp} className="flex items-center gap-5">
+                    <div className="p-3 bg-green-600/20 rounded-lg">
+                      <Icon className="h-5 w-5 text-green-400" />
+                    </div>
+                    <div>
+                      <p className="text-xs text-white/40 uppercase tracking-widest font-medium mb-0.5">{label}</p>
+                      <p className="text-white font-medium">{value}</p>
+                    </div>
+                  </motion.div>
+                ))}
               </div>
+
+              <motion.div variants={fadeInUp} className="mt-10 p-4 border border-white/10 rounded">
+                <p className="text-white/40 text-xs mb-1 uppercase tracking-wider">CNPJ</p>
+                <p className="text-white/70 font-mono">60.147.676/0001-34</p>
+              </motion.div>
             </motion.div>
 
-            <motion.div 
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              variants={fadeInUp}
-              className="bg-secondary/40 border border-border p-8 md:p-12"
-            >
-              <h3 className="text-2xl font-bold mb-8">Solicite um Orçamento</h3>
-              <form onSubmit={handleContactSubmit} className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <Label htmlFor="nome">Nome Completo</Label>
-                    <Input id="nome" required className="bg-background border-border h-12 rounded-none focus-visible:ring-primary" />
+            <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeInUp}>
+              <form onSubmit={handleContactSubmit} className="space-y-4 bg-white/5 border border-white/10 rounded-lg p-8">
+                <h3 className="text-white font-bold text-xl mb-6">Envie uma mensagem</h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label className="text-white/60 text-sm mb-1 block">Nome *</Label>
+                    <Input required placeholder="Seu nome" className="bg-white/5 border-white/10 text-white placeholder:text-white/30 rounded-none" data-testid="input-contact-name" />
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="empresa">Empresa</Label>
-                    <Input id="empresa" required className="bg-background border-border h-12 rounded-none focus-visible:ring-primary" />
+                  <div>
+                    <Label className="text-white/60 text-sm mb-1 block">Empresa</Label>
+                    <Input placeholder="Empresa (opcional)" className="bg-white/5 border-white/10 text-white placeholder:text-white/30 rounded-none" data-testid="input-contact-company" />
                   </div>
                 </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <Label htmlFor="email">E-mail Corporativo</Label>
-                    <Input id="email" type="email" required className="bg-background border-border h-12 rounded-none focus-visible:ring-primary" />
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label className="text-white/60 text-sm mb-1 block">E-mail *</Label>
+                    <Input required type="email" placeholder="email@empresa.com" className="bg-white/5 border-white/10 text-white placeholder:text-white/30 rounded-none" data-testid="input-contact-email" />
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="telefone">Telefone / WhatsApp</Label>
-                    <Input id="telefone" required className="bg-background border-border h-12 rounded-none focus-visible:ring-primary" />
+                  <div>
+                    <Label className="text-white/60 text-sm mb-1 block">Telefone</Label>
+                    <Input placeholder="(11) 00000-0000" className="bg-white/5 border-white/10 text-white placeholder:text-white/30 rounded-none" data-testid="input-contact-phone" />
                   </div>
                 </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="mensagem">Como podemos ajudar?</Label>
-                  <Textarea id="mensagem" required className="bg-background border-border min-h-[120px] rounded-none focus-visible:ring-primary resize-y" />
+                <div>
+                  <Label className="text-white/60 text-sm mb-1 block">Mensagem *</Label>
+                  <Textarea required rows={5} placeholder="Descreva o material, volume estimado..." className="bg-white/5 border-white/10 text-white placeholder:text-white/30 rounded-none resize-none" data-testid="input-contact-message" />
                 </div>
-
-                <Button type="submit" size="lg" className="w-full bg-primary text-primary-foreground hover:bg-primary/90 h-14 text-base rounded-none font-bold tracking-widest uppercase">
+                <Button type="submit" className="w-full bg-green-600 hover:bg-green-500 text-white rounded-none h-12 font-bold tracking-wide" data-testid="button-contact-submit">
                   ENVIAR MENSAGEM
                 </Button>
               </form>
@@ -567,46 +533,39 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="bg-[#0a0a0a] py-16 border-t border-border/50">
+      {/* ── FOOTER ── */}
+      <footer className="bg-[#0a0a0a] py-12 border-t border-white/5">
         <div className="container mx-auto px-6 md:px-12">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-10 mb-10">
             <div className="md:col-span-2">
-              <img src="/fapex-logo-nobg.png" alt="Fapex" className="h-16 mb-6" />
-              <p className="text-foreground/60 max-w-sm">
-                Soluções inteligentes e sustentáveis para o comércio de resíduos e metais industriais. Transformando passivos em ativos na economia circular.
+              <img src="/fapex-logo-nobg.png" alt="Fapex" className="h-16 mb-4" />
+              <p className="text-white/40 text-sm max-w-xs leading-relaxed">
+                Soluções inteligentes e sustentáveis para o comércio de resíduos e metais industriais.
               </p>
+              <p className="text-white/25 text-xs mt-3 font-mono">CNPJ 60.147.676/0001-34</p>
             </div>
-            
             <div>
-              <h4 className="text-white font-bold mb-6 tracking-widest uppercase text-sm">Links Rápidos</h4>
-              <ul className="space-y-3">
-                {navLinks.map((link) => (
-                  <li key={link.id}>
-                    <button 
-                      onClick={() => scrollToSection(link.id)}
-                      className="text-foreground/60 hover:text-primary transition-colors text-sm"
-                    >
-                      {link.name}
-                    </button>
-                  </li>
+              <h4 className="text-white/60 text-xs uppercase tracking-widest font-semibold mb-4">Serviços</h4>
+              <ul className="space-y-2 text-white/35 text-sm">
+                {["Compra de Sucata", "Venda de Metais", "Gestão de Resíduos", "Assessoria"].map((s) => (
+                  <li key={s}>{s}</li>
                 ))}
               </ul>
             </div>
-            
             <div>
-              <h4 className="text-white font-bold mb-6 tracking-widest uppercase text-sm">Legal</h4>
-              <ul className="space-y-3 text-foreground/60 text-sm">
-                <li>CNPJ: 60.147.676/0001-34</li>
-                <li>Licenças Ambientais</li>
-                <li>Política de Privacidade</li>
+              <h4 className="text-white/60 text-xs uppercase tracking-widest font-semibold mb-4">Contato</h4>
+              <ul className="space-y-2 text-white/35 text-sm">
+                <li>São Paulo, SP</li>
+                <li>contato@fapex.com.br</li>
+                <li>(11) 0000-0000</li>
               </ul>
             </div>
           </div>
-          
-          <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center text-xs text-foreground/50">
-            <p>&copy; {new Date().getFullYear()} Fapex Indústria e Comércio de Resíduos e Metais LTDA. Todos os direitos reservados.</p>
-            <p className="mt-4 md:mt-0">Desenvolvido com excelência.</p>
+          <div className="border-t border-white/5 pt-6 flex flex-col md:flex-row justify-between items-center gap-3">
+            <p className="text-white/20 text-xs">
+              &copy; {new Date().getFullYear()} Fapex Indústria e Comércio de Resíduos e Metais LTDA. Todos os direitos reservados.
+            </p>
+            <a href="/admin" className="text-white/15 text-xs hover:text-white/40 transition-colors">Admin</a>
           </div>
         </div>
       </footer>
