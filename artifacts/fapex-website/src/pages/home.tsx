@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
 import {
-  Menu, X, Phone, Mail, MapPin,
+  Menu, X, Mail, MapPin, Phone,
   Leaf, ShieldCheck, Factory, Recycle, Scale,
-  TrendingUp, CheckCircle2, ArrowRight, ChevronRight, Images
+  TrendingUp, CheckCircle2, ArrowRight, ChevronRight, Images,
+  Sun, Moon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import { useTheme } from "@/hooks/use-theme";
 import { apiJson } from "@/lib/api";
 
 interface BlogPost {
@@ -40,7 +42,9 @@ const scaleIn = {
 
 function formatDate(dateStr: string) {
   try {
-    return new Date(dateStr).toLocaleDateString("pt-BR", { day: "2-digit", month: "long", year: "numeric" });
+    return new Date(dateStr).toLocaleDateString("pt-BR", {
+      day: "2-digit", month: "long", year: "numeric",
+    });
   } catch { return ""; }
 }
 
@@ -50,6 +54,7 @@ export default function Home() {
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
   const [galleryPhotos, setGalleryPhotos] = useState<GalleryPhoto[]>([]);
   const { toast } = useToast();
+  const { theme, toggleTheme } = useTheme();
 
   const { scrollYProgress } = useScroll();
   const heroY = useTransform(scrollYProgress, [0, 0.25], ["0%", "40%"]);
@@ -89,31 +94,51 @@ export default function Home() {
   ];
 
   return (
-    <div className="min-h-screen overflow-x-hidden font-sans" style={{ background: "#fff", color: "#111" }}>
+    <div className="min-h-screen overflow-x-hidden font-sans bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100 transition-colors duration-300">
 
       {/* ── NAVIGATION ── */}
-      <nav className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${isScrolled ? "bg-[#111]/95 backdrop-blur-md py-3 shadow-lg" : "bg-transparent py-5"}`}>
+      <nav className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
+        isScrolled
+          ? "bg-[#111]/95 dark:bg-[#0a0a0a]/98 backdrop-blur-md py-3 shadow-lg"
+          : "bg-transparent py-5"
+      }`}>
         <div className="container mx-auto px-6 md:px-12 flex justify-between items-center">
           <div className="flex items-center cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>
-            <img src="/fapex-logo-nobg.png" alt="Fapex" className="h-14 md:h-16 w-auto" data-testid="img-logo-nav" />
+            <img src="/fapex-logo-nobg.png" alt="Fapex" className="h-14 md:h-16 w-auto" />
           </div>
-          <div className="hidden md:flex items-center space-x-8">
+
+          <div className="hidden md:flex items-center gap-8">
             {navLinks.map((link) => (
               <button key={link.id} onClick={() => scrollToSection(link.id)}
-                className="text-sm font-semibold text-white/80 hover:text-green-400 transition-colors uppercase tracking-wider"
-                data-testid={`link-nav-${link.id}`}>
+                className="text-sm font-semibold text-white/80 hover:text-green-400 transition-colors uppercase tracking-wider">
                 {link.name}
               </button>
             ))}
+
+            {/* Theme toggle */}
+            <button
+              onClick={toggleTheme}
+              className="p-2 rounded-full text-white/60 hover:text-white hover:bg-white/10 transition-all"
+              aria-label="Alternar tema"
+              data-testid="button-theme-toggle"
+            >
+              {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            </button>
+
             <Button onClick={() => scrollToSection("contato")}
-              className="bg-green-600 hover:bg-green-500 text-white rounded-none px-6 font-bold tracking-wide"
-              data-testid="button-nav-contact">
+              className="bg-green-600 hover:bg-green-500 text-white rounded-none px-6 font-bold tracking-wide">
               Fale Conosco
             </Button>
           </div>
-          <button className="md:hidden text-white" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
-            {mobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
-          </button>
+
+          <div className="flex items-center gap-2 md:hidden">
+            <button onClick={toggleTheme} className="p-2 text-white/70 hover:text-white transition-colors" aria-label="Alternar tema">
+              {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            </button>
+            <button className="text-white" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+              {mobileMenuOpen ? <X size={26} /> : <Menu size={26} />}
+            </button>
+          </div>
         </div>
       </nav>
 
@@ -121,8 +146,8 @@ export default function Home() {
       <AnimatePresence>
         {mobileMenuOpen && (
           <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}
-            className="fixed inset-0 z-40 bg-[#111] pt-24 px-6 pb-6 flex flex-col">
-            <div className="flex flex-col space-y-6 text-center mt-8">
+            className="fixed inset-0 z-40 bg-[#111] dark:bg-[#0a0a0a] pt-24 px-6 pb-6 flex flex-col">
+            <div className="flex flex-col space-y-5 text-center mt-8">
               {navLinks.map((link) => (
                 <button key={link.id} onClick={() => scrollToSection(link.id)}
                   className="text-xl font-semibold text-white hover:text-green-400 transition-colors uppercase tracking-wider">
@@ -138,7 +163,7 @@ export default function Home() {
         )}
       </AnimatePresence>
 
-      {/* ── HERO ── */}
+      {/* ── HERO (always dark) ── */}
       <section className="relative h-screen min-h-[640px] flex items-center overflow-hidden bg-[#0a0a0a]">
         <motion.div className="absolute inset-0 z-0" style={{ y: heroY, opacity: heroOpacity }}>
           <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0a]/50 via-[#0a0a0a]/60 to-[#0a0a0a] z-10" />
@@ -146,7 +171,7 @@ export default function Home() {
           <img src="/images/hero-bg.png" alt="Fapex" className="w-full h-full object-cover object-center" />
         </motion.div>
 
-        <div className="container mx-auto px-6 md:px-12 relative z-20 pt-24">
+        <div className="container mx-auto px-6 md:px-12 relative z-20 pt-20">
           <motion.div initial="hidden" animate="visible" variants={staggerContainer} className="max-w-3xl">
             <motion.div variants={fadeInUp} className="flex items-center gap-3 mb-6">
               <div className="h-[3px] w-10 bg-green-400" />
@@ -168,8 +193,7 @@ export default function Home() {
 
             <motion.div variants={fadeInUp} className="flex flex-col sm:flex-row gap-4">
               <Button onClick={() => scrollToSection("contato")} size="lg"
-                className="bg-green-600 hover:bg-green-500 text-white h-14 px-8 text-base rounded-none font-bold tracking-wide group"
-                data-testid="button-hero-cta">
+                className="bg-green-600 hover:bg-green-500 text-white h-14 px-8 text-base rounded-none font-bold tracking-wide group">
                 SOLICITAR COTAÇÃO
                 <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
               </Button>
@@ -193,8 +217,8 @@ export default function Home() {
         </motion.div>
       </section>
 
-      {/* ── MATERIAIS DESTAQUE BANNER ── */}
-      <div className="bg-green-700 py-4">
+      {/* ── MATERIAIS BANNER ── */}
+      <div className="bg-green-700 dark:bg-green-800 py-4">
         <div className="container mx-auto px-6 md:px-12">
           <p className="text-white text-sm font-medium text-center">
             <span className="font-bold">Compramos e vendemos:</span>
@@ -203,35 +227,39 @@ export default function Home() {
         </div>
       </div>
 
-      {/* ── SOBRE NÓS (WHITE) ── */}
-      <section id="sobre" className="py-20 md:py-28 bg-white">
+      {/* ── SOBRE NÓS ── */}
+      <section id="sobre" className="py-20 md:py-28 bg-white dark:bg-gray-950 transition-colors">
         <div className="container mx-auto px-6 md:px-12">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-80px" }} variants={staggerContainer}>
               <motion.div variants={fadeInUp} className="flex items-center gap-3 mb-4">
                 <div className="h-[3px] w-10 bg-green-600" />
-                <span className="text-green-700 font-semibold tracking-widest uppercase text-sm">Sobre a Fapex</span>
+                <span className="text-green-700 dark:text-green-400 font-semibold tracking-widest uppercase text-sm">Sobre a Fapex</span>
               </motion.div>
-              <motion.h2 variants={fadeInUp} className="text-3xl md:text-5xl font-bold mb-6 leading-tight text-gray-900">
-                Experiência e solidez no mercado de <span className="text-green-600">reciclagem</span>
+              <motion.h2 variants={fadeInUp} className="text-3xl md:text-5xl font-bold mb-6 leading-tight text-gray-900 dark:text-white">
+                Experiência e solidez no mercado de <span className="text-green-600 dark:text-green-400">reciclagem</span>
               </motion.h2>
-              <motion.p variants={fadeInUp} className="text-gray-600 text-lg mb-5 leading-relaxed">
+              <motion.p variants={fadeInUp} className="text-gray-600 dark:text-gray-300 text-lg mb-5 leading-relaxed">
                 A <strong>Fapex Indústria e Comércio de Resíduos e Metais</strong> atua há anos no mercado oferecendo soluções integradas para a gestão de passivos industriais.
               </motion.p>
-              <motion.p variants={fadeInUp} className="text-gray-600 text-lg mb-8 leading-relaxed">
-                Somos parceiros estratégicos de grandes indústrias, garantindo que materiais recicláveis retornem à cadeia produtiva de forma eficiente, rentável e ambientalmente responsável, com total rastreabilidade.
+              <motion.p variants={fadeInUp} className="text-gray-600 dark:text-gray-300 text-lg mb-8 leading-relaxed">
+                Somos parceiros estratégicos de grandes indústrias, garantindo que materiais recicláveis retornem à cadeia produtiva de forma eficiente, rentável e ambientalmente responsável.
               </motion.p>
-              <motion.div variants={fadeInUp} className="grid grid-cols-3 gap-6 border-t border-gray-200 pt-8">
-                {[{ n: "100%", label: "Conformidade Legal" }, { n: "+10k", label: "Ton. Processadas" }, { n: "CNPJ", label: "60.147.676/0001-34" }].map((s) => (
+              <motion.div variants={fadeInUp} className="grid grid-cols-3 gap-6 border-t border-gray-200 dark:border-gray-800 pt-8">
+                {[
+                  { n: "100%", label: "Conformidade Legal" },
+                  { n: "+10k", label: "Ton. Processadas" },
+                  { n: "CNPJ", label: "60.147.676/0001-34" },
+                ].map((s) => (
                   <div key={s.label}>
-                    <p className="text-3xl font-black text-green-600 mb-1">{s.n}</p>
-                    <p className="text-xs text-gray-500 uppercase tracking-wider font-medium">{s.label}</p>
+                    <p className="text-3xl font-black text-green-600 dark:text-green-400 mb-1">{s.n}</p>
+                    <p className="text-xs text-gray-400 dark:text-gray-500 uppercase tracking-wider font-medium">{s.label}</p>
                   </div>
                 ))}
               </motion.div>
             </motion.div>
 
-            <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={scaleIn} className="relative h-[480px]">
+            <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={scaleIn} className="relative h-[460px]">
               <div className="absolute inset-0 bg-green-600/10 translate-x-3 translate-y-3 rounded" />
               <img src="/images/about-facility.png" alt="Fapex" className="absolute inset-0 w-full h-full object-cover rounded shadow-xl" />
               <div className="absolute bottom-0 left-0 bg-green-700 p-5 w-3/4 rounded-tr">
@@ -244,19 +272,19 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── SERVIÇOS (LIGHT GRAY) ── */}
-      <section id="servicos" className="py-20 md:py-28 bg-gray-50 border-t border-gray-100">
+      {/* ── SERVIÇOS ── */}
+      <section id="servicos" className="py-20 md:py-28 bg-gray-50 dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800 transition-colors">
         <div className="container mx-auto px-6 md:px-12">
           <div className="text-center max-w-3xl mx-auto mb-16">
             <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeInUp}
               className="flex items-center justify-center gap-3 mb-4">
               <div className="h-[3px] w-10 bg-green-600" />
-              <span className="text-green-700 font-semibold tracking-widest uppercase text-sm">O que fazemos</span>
+              <span className="text-green-700 dark:text-green-400 font-semibold tracking-widest uppercase text-sm">O que fazemos</span>
               <div className="h-[3px] w-10 bg-green-600" />
             </motion.div>
             <motion.h2 initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeInUp}
-              className="text-3xl md:text-5xl font-bold text-gray-900 leading-tight">
-              Soluções completas em <span className="text-green-600">gestão de resíduos</span>
+              className="text-3xl md:text-5xl font-bold text-gray-900 dark:text-white leading-tight">
+              Soluções completas em <span className="text-green-600 dark:text-green-400">gestão de resíduos</span>
             </motion.h2>
           </div>
 
@@ -268,14 +296,13 @@ export default function Home() {
             ].map(({ icon: Icon, title, desc }, i) => (
               <motion.div key={i} initial="hidden" whileInView="visible" viewport={{ once: true }}
                 variants={{ hidden: { opacity: 0, y: 30 }, visible: { opacity: 1, y: 0, transition: { delay: i * 0.1, duration: 0.5 } } }}
-                className="bg-white border border-gray-200 p-8 hover:border-green-500 hover:shadow-lg transition-all group rounded-sm"
-                data-testid={`card-service-${i}`}>
-                <div className="p-3 bg-green-50 rounded-lg w-fit mb-5 group-hover:bg-green-100 transition-colors">
-                  <Icon className="h-7 w-7 text-green-600" />
+                className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-8 hover:border-green-500 hover:shadow-lg transition-all group rounded-sm">
+                <div className="p-3 bg-green-50 dark:bg-green-900/30 rounded-lg w-fit mb-5 group-hover:bg-green-100 dark:group-hover:bg-green-900/50 transition-colors">
+                  <Icon className="h-7 w-7 text-green-600 dark:text-green-400" />
                 </div>
-                <h3 className="text-xl font-bold mb-3 text-gray-900">{title}</h3>
-                <p className="text-gray-500 leading-relaxed text-sm">{desc}</p>
-                <div className="mt-5 flex items-center text-green-600 text-sm font-semibold group-hover:gap-2 gap-1 transition-all">
+                <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">{title}</h3>
+                <p className="text-gray-500 dark:text-gray-400 leading-relaxed text-sm">{desc}</p>
+                <div className="mt-5 flex items-center gap-1 text-green-600 dark:text-green-400 text-sm font-semibold group-hover:gap-2 transition-all">
                   <span>Saiba mais</span><ChevronRight className="h-4 w-4" />
                 </div>
               </motion.div>
@@ -284,12 +311,12 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── MATERIAIS (WHITE) ── */}
-      <section id="materiais" className="py-20 md:py-28 bg-white border-t border-gray-100">
+      {/* ── MATERIAIS ── */}
+      <section id="materiais" className="py-20 md:py-28 bg-white dark:bg-gray-950 border-t border-gray-100 dark:border-gray-800 transition-colors">
         <div className="container mx-auto px-6 md:px-12">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={scaleIn}
-              className="relative h-[500px] order-2 lg:order-1">
+              className="relative h-[480px] order-2 lg:order-1">
               <img src="/images/materials.png" alt="Materiais" className="w-full h-full object-cover rounded shadow-xl" />
             </motion.div>
 
@@ -297,31 +324,31 @@ export default function Home() {
               className="order-1 lg:order-2">
               <motion.div variants={fadeInUp} className="flex items-center gap-3 mb-4">
                 <div className="h-[3px] w-10 bg-green-600" />
-                <span className="text-green-700 font-semibold tracking-widest uppercase text-sm">Materiais que compramos</span>
+                <span className="text-green-700 dark:text-green-400 font-semibold tracking-widest uppercase text-sm">Materiais que compramos</span>
               </motion.div>
-              <motion.h2 variants={fadeInUp} className="text-3xl md:text-5xl font-bold mb-6 leading-tight text-gray-900">
-                Ampla variedade de <span className="text-green-600">sucatas industriais</span>
+              <motion.h2 variants={fadeInUp} className="text-3xl md:text-5xl font-bold mb-6 leading-tight text-gray-900 dark:text-white">
+                Ampla variedade de <span className="text-green-600 dark:text-green-400">sucatas industriais</span>
               </motion.h2>
-              <motion.p variants={fadeInUp} className="text-gray-500 text-base mb-8 leading-relaxed">
+              <motion.p variants={fadeInUp} className="text-gray-500 dark:text-gray-400 text-base mb-8 leading-relaxed">
                 Classificamos e processamos materiais para reintegração na indústria siderúrgica e metalúrgica com total rastreabilidade e melhores preços.
               </motion.p>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
                 <motion.div variants={fadeInUp}>
-                  <h3 className="font-bold text-gray-900 mb-3 pb-2 border-b-2 border-green-500 inline-block">Metais Ferrosos</h3>
+                  <h3 className="font-bold text-gray-900 dark:text-white mb-3 pb-2 border-b-2 border-green-500 inline-block">Metais Ferrosos</h3>
                   <ul className="space-y-2 mt-3">
                     {["Aço", "Ferro Fundido", "Aço Inox", "Estamparia"].map((item) => (
-                      <li key={item} className="flex items-center gap-2 text-gray-600">
+                      <li key={item} className="flex items-center gap-2 text-gray-600 dark:text-gray-300">
                         <CheckCircle2 className="h-4 w-4 text-green-500 shrink-0" />{item}
                       </li>
                     ))}
                   </ul>
                 </motion.div>
                 <motion.div variants={fadeInUp}>
-                  <h3 className="font-bold text-gray-900 mb-3 pb-2 border-b-2 border-green-500 inline-block">Metais Não-Ferrosos</h3>
+                  <h3 className="font-bold text-gray-900 dark:text-white mb-3 pb-2 border-b-2 border-green-500 inline-block">Metais Não-Ferrosos</h3>
                   <ul className="space-y-2 mt-3">
                     {["Cobre", "Alumínio", "Latão", "Bronze", "Zinco", "Chumbo"].map((item) => (
-                      <li key={item} className="flex items-center gap-2 text-gray-600">
+                      <li key={item} className="flex items-center gap-2 text-gray-600 dark:text-gray-300">
                         <CheckCircle2 className="h-4 w-4 text-green-500 shrink-0" />{item}
                       </li>
                     ))}
@@ -329,7 +356,8 @@ export default function Home() {
                 </motion.div>
               </div>
 
-              <motion.div variants={fadeInUp} className="mt-8 p-4 bg-amber-50 border border-amber-200 rounded text-sm text-amber-800">
+              <motion.div variants={fadeInUp}
+                className="mt-8 p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/50 rounded text-sm text-amber-800 dark:text-amber-300">
                 <strong>Não trabalhamos com:</strong> Papelão, madeira, vidro, plástico, eletrodoméstico e sucata automotiva.
               </motion.div>
             </motion.div>
@@ -337,7 +365,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── SUSTENTABILIDADE (DARK GREEN) ── */}
+      {/* ── SUSTENTABILIDADE (always dark green) ── */}
       <section id="sustentabilidade" className="py-20 md:py-28 bg-green-800 relative overflow-hidden">
         <div className="absolute inset-0 opacity-10">
           <img src="/images/sustainability.png" alt="" className="w-full h-full object-cover" />
@@ -352,7 +380,8 @@ export default function Home() {
                 Compromisso com o <span className="text-green-300">futuro</span>
               </motion.h2>
               <motion.p variants={fadeInUp} className="text-xl text-white/75 mb-12 leading-relaxed">
-                A reciclagem de metais reduz em até <strong className="text-green-300">90%</strong> a extração de minérios. Na Fapex, a sustentabilidade não é marketing — é o nosso modelo de negócio.
+                A reciclagem de metais reduz em até <strong className="text-green-300">90%</strong> a extração de minérios.
+                Na Fapex, a sustentabilidade não é marketing — é o nosso modelo de negócio.
               </motion.p>
               <motion.div variants={staggerContainer} className="grid grid-cols-1 md:grid-cols-3 gap-5">
                 {[
@@ -373,21 +402,21 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── BLOG (WHITE) ── */}
-      <section id="blog" className="py-20 md:py-28 bg-white border-t border-gray-100">
+      {/* ── BLOG ── */}
+      <section id="blog" className="py-20 md:py-28 bg-white dark:bg-gray-950 border-t border-gray-100 dark:border-gray-800 transition-colors">
         <div className="container mx-auto px-6 md:px-12">
           <div className="flex items-end justify-between mb-12">
             <div>
               <div className="flex items-center gap-3 mb-3">
                 <div className="h-[3px] w-10 bg-green-600" />
-                <span className="text-green-700 font-semibold tracking-widest uppercase text-sm">Notícias</span>
+                <span className="text-green-700 dark:text-green-400 font-semibold tracking-widest uppercase text-sm">Notícias</span>
               </div>
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900">Blog Fapex</h2>
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">Blog Fapex</h2>
             </div>
           </div>
 
           {blogPosts.length === 0 ? (
-            <div className="text-center py-16 text-gray-400">
+            <div className="text-center py-16 text-gray-400 dark:text-gray-600">
               <p className="text-lg">Em breve publicaremos conteúdo sobre reciclagem e metais.</p>
               <p className="text-sm mt-2">Acompanhe nossas novidades!</p>
             </div>
@@ -396,26 +425,29 @@ export default function Home() {
               {blogPosts.slice(0, 6).map((post, i) => (
                 <motion.article key={post.id} initial="hidden" whileInView="visible" viewport={{ once: true }}
                   variants={{ hidden: { opacity: 0, y: 30 }, visible: { opacity: 1, y: 0, transition: { delay: i * 0.08, duration: 0.5 } } }}
-                  className="group border border-gray-200 rounded overflow-hidden hover:shadow-xl transition-all"
-                  data-testid={`card-blog-${post.id}`}>
-                  <div className="overflow-hidden h-48 bg-gray-100">
+                  className="group border border-gray-200 dark:border-gray-800 rounded overflow-hidden hover:shadow-xl dark:hover:shadow-gray-900 transition-all bg-white dark:bg-gray-900">
+                  <div className="overflow-hidden h-48 bg-gray-100 dark:bg-gray-800">
                     {post.imageUrl ? (
                       <img src={post.imageUrl} alt={post.title}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                     ) : (
-                      <div className="w-full h-full bg-green-50 flex items-center justify-center">
-                        <Factory className="h-12 w-12 text-green-200" />
+                      <div className="w-full h-full bg-green-50 dark:bg-green-900/20 flex items-center justify-center">
+                        <Factory className="h-12 w-12 text-green-200 dark:text-green-800" />
                       </div>
                     )}
                   </div>
                   <div className="p-5">
                     {post.publishedAt && (
-                      <p className="text-green-600 text-xs font-semibold uppercase tracking-wider mb-2">{formatDate(post.publishedAt)}</p>
+                      <p className="text-green-600 dark:text-green-400 text-xs font-semibold uppercase tracking-wider mb-2">
+                        {formatDate(post.publishedAt)}
+                      </p>
                     )}
-                    <h3 className="font-bold text-gray-900 text-lg leading-snug mb-3 group-hover:text-green-700 transition-colors">
+                    <h3 className="font-bold text-gray-900 dark:text-white text-lg leading-snug mb-3 group-hover:text-green-700 dark:group-hover:text-green-400 transition-colors">
                       {post.title}
                     </h3>
-                    {post.excerpt && <p className="text-gray-500 text-sm leading-relaxed line-clamp-2">{post.excerpt} [...]</p>}
+                    {post.excerpt && (
+                      <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed line-clamp-2">{post.excerpt}</p>
+                    )}
                   </div>
                 </motion.article>
               ))}
@@ -424,27 +456,27 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── GALERIA (LIGHT GRAY) ── */}
+      {/* ── GALERIA ── */}
       {galleryPhotos.length > 0 && (
-        <section id="galeria" className="py-20 md:py-28 bg-gray-50 border-t border-gray-100">
+        <section id="galeria" className="py-20 md:py-28 bg-gray-50 dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800 transition-colors">
           <div className="container mx-auto px-6 md:px-12">
             <div className="flex items-end justify-between mb-12">
               <div>
                 <div className="flex items-center gap-3 mb-3">
                   <div className="h-[3px] w-10 bg-green-600" />
-                  <span className="text-green-700 font-semibold tracking-widest uppercase text-sm">Instalações</span>
+                  <span className="text-green-700 dark:text-green-400 font-semibold tracking-widest uppercase text-sm">Instalações</span>
                 </div>
-                <h2 className="text-3xl md:text-4xl font-bold text-gray-900">Galeria de Fotos</h2>
+                <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">Galeria de Fotos</h2>
               </div>
-              <Images className="h-8 w-8 text-green-500 opacity-40" />
+              <Images className="h-8 w-8 text-green-500 opacity-30" />
             </div>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
               {galleryPhotos.slice(0, 8).map((photo, i) => (
                 <motion.div key={photo.id} initial="hidden" whileInView="visible" viewport={{ once: true }}
                   variants={{ hidden: { opacity: 0, scale: 0.95 }, visible: { opacity: 1, scale: 1, transition: { delay: i * 0.06, duration: 0.4 } } }}
-                  className="group relative overflow-hidden rounded aspect-square bg-gray-200"
-                  data-testid={`card-gallery-${photo.id}`}>
-                  <img src={photo.imageUrl} alt={photo.title || "Fapex"} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                  className="group relative overflow-hidden rounded aspect-square bg-gray-200 dark:bg-gray-800">
+                  <img src={photo.imageUrl} alt={photo.title || "Fapex"}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                   {photo.title && (
                     <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-3">
                       <span className="text-white text-sm font-medium">{photo.title}</span>
@@ -457,20 +489,21 @@ export default function Home() {
         </section>
       )}
 
-      {/* ── CONTATO (DARK) ── */}
-      <section id="contato" className="py-20 md:py-28 bg-[#111]">
+      {/* ── CONTATO ── */}
+      <section id="contato" className="py-20 md:py-28 bg-[#111] dark:bg-[#0a0a0a]">
         <div className="container mx-auto px-6 md:px-12">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
             <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={staggerContainer}>
               <motion.div variants={fadeInUp} className="flex items-center gap-3 mb-4">
-                <div className="h-[3px] w-10 bg-green-600" />
+                <div className="h-[3px] w-10 bg-green-500" />
                 <span className="text-green-400 font-semibold tracking-widest uppercase text-sm">Entre em Contato</span>
               </motion.div>
               <motion.h2 variants={fadeInUp} className="text-4xl md:text-5xl font-bold mb-6 leading-tight text-white">
                 Vamos fazer <span className="text-green-400">negócio.</span>
               </motion.h2>
               <motion.p variants={fadeInUp} className="text-white/60 text-lg mb-10 leading-relaxed max-w-lg">
-                Seja para vender suas sucatas ou estruturar um plano de gestão de resíduos, nossa equipe está pronta para atender sua indústria.
+                Seja para vender suas sucatas ou estruturar um plano de gestão de resíduos,
+                nossa equipe está pronta para atender sua indústria.
               </motion.p>
 
               <div className="space-y-6">
@@ -480,7 +513,7 @@ export default function Home() {
                   { icon: Mail, label: "E-mail", value: "contato@fapex.com.br" },
                 ].map(({ icon: Icon, label, value }) => (
                   <motion.div key={label} variants={fadeInUp} className="flex items-center gap-5">
-                    <div className="p-3 bg-green-600/20 rounded-lg">
+                    <div className="p-3 bg-green-600/20 rounded-lg shrink-0">
                       <Icon className="h-5 w-5 text-green-400" />
                     </div>
                     <div>
@@ -498,33 +531,40 @@ export default function Home() {
             </motion.div>
 
             <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeInUp}>
-              <form onSubmit={handleContactSubmit} className="space-y-4 bg-white/5 border border-white/10 rounded-lg p-8">
+              <form onSubmit={handleContactSubmit}
+                className="space-y-4 bg-white/5 border border-white/10 rounded-lg p-8">
                 <h3 className="text-white font-bold text-xl mb-6">Envie uma mensagem</h3>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <Label className="text-white/60 text-sm mb-1 block">Nome *</Label>
-                    <Input required placeholder="Seu nome" className="bg-white/5 border-white/10 text-white placeholder:text-white/30 rounded-none" data-testid="input-contact-name" />
+                    <Input required placeholder="Seu nome"
+                      className="bg-white/5 border-white/10 text-white placeholder:text-white/30 rounded-none" />
                   </div>
                   <div>
                     <Label className="text-white/60 text-sm mb-1 block">Empresa</Label>
-                    <Input placeholder="Empresa (opcional)" className="bg-white/5 border-white/10 text-white placeholder:text-white/30 rounded-none" data-testid="input-contact-company" />
+                    <Input placeholder="Empresa (opcional)"
+                      className="bg-white/5 border-white/10 text-white placeholder:text-white/30 rounded-none" />
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <Label className="text-white/60 text-sm mb-1 block">E-mail *</Label>
-                    <Input required type="email" placeholder="email@empresa.com" className="bg-white/5 border-white/10 text-white placeholder:text-white/30 rounded-none" data-testid="input-contact-email" />
+                    <Input required type="email" placeholder="email@empresa.com"
+                      className="bg-white/5 border-white/10 text-white placeholder:text-white/30 rounded-none" />
                   </div>
                   <div>
                     <Label className="text-white/60 text-sm mb-1 block">Telefone</Label>
-                    <Input placeholder="(11) 00000-0000" className="bg-white/5 border-white/10 text-white placeholder:text-white/30 rounded-none" data-testid="input-contact-phone" />
+                    <Input placeholder="(11) 00000-0000"
+                      className="bg-white/5 border-white/10 text-white placeholder:text-white/30 rounded-none" />
                   </div>
                 </div>
                 <div>
                   <Label className="text-white/60 text-sm mb-1 block">Mensagem *</Label>
-                  <Textarea required rows={5} placeholder="Descreva o material, volume estimado..." className="bg-white/5 border-white/10 text-white placeholder:text-white/30 rounded-none resize-none" data-testid="input-contact-message" />
+                  <Textarea required rows={5} placeholder="Descreva o material, volume estimado..."
+                    className="bg-white/5 border-white/10 text-white placeholder:text-white/30 rounded-none resize-none" />
                 </div>
-                <Button type="submit" className="w-full bg-green-600 hover:bg-green-500 text-white rounded-none h-12 font-bold tracking-wide" data-testid="button-contact-submit">
+                <Button type="submit"
+                  className="w-full bg-green-600 hover:bg-green-500 text-white rounded-none h-12 font-bold tracking-wide">
                   ENVIAR MENSAGEM
                 </Button>
               </form>
@@ -565,7 +605,13 @@ export default function Home() {
             <p className="text-white/20 text-xs">
               &copy; {new Date().getFullYear()} Fapex Indústria e Comércio de Resíduos e Metais LTDA. Todos os direitos reservados.
             </p>
-            <a href="/admin" className="text-white/15 text-xs hover:text-white/40 transition-colors">Admin</a>
+            <div className="flex items-center gap-4">
+              <button onClick={toggleTheme} className="text-white/20 text-xs hover:text-white/50 transition-colors flex items-center gap-1.5">
+                {theme === "dark" ? <Sun className="h-3 w-3" /> : <Moon className="h-3 w-3" />}
+                {theme === "dark" ? "Modo claro" : "Modo escuro"}
+              </button>
+              <a href="/admin" className="text-white/15 text-xs hover:text-white/40 transition-colors">Admin</a>
+            </div>
           </div>
         </div>
       </footer>
