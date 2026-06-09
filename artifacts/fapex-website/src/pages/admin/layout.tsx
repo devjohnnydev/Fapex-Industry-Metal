@@ -3,7 +3,7 @@ import { useLocation, Link } from "wouter";
 import { apiFetch } from "@/lib/api";
 import {
   LayoutDashboard, FileText, Images, LogOut,
-  Menu, ExternalLink, ChevronRight,
+  Menu, ExternalLink, ChevronRight, Settings,
 } from "lucide-react";
 
 interface AdminLayoutProps {
@@ -45,6 +45,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
     { href: "/admin/blog", label: "Blog", icon: FileText },
     { href: "/admin/gallery", label: "Galeria", icon: Images },
+    { href: "/admin/settings", label: "Configurações", icon: Settings },
   ];
 
   const isActive = (href: string) =>

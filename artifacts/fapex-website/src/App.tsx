@@ -9,6 +9,7 @@ import AdminLogin from "@/pages/admin/login";
 import AdminDashboard from "@/pages/admin/dashboard";
 import AdminBlog from "@/pages/admin/blog";
 import AdminGallery from "@/pages/admin/gallery";
+import AdminSettings from "@/pages/admin/settings";
 
 const queryClient = new QueryClient();
 
@@ -19,6 +20,7 @@ function Router() {
       <Route path="/admin/login" component={AdminLogin} />
       <Route path="/admin/blog" component={AdminBlog} />
       <Route path="/admin/gallery" component={AdminGallery} />
+      <Route path="/admin/settings" component={AdminSettings} />
       <Route path="/admin" component={AdminDashboard} />
       <Route component={NotFound} />
     </Switch>
