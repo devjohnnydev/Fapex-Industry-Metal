@@ -1,12 +1,16 @@
 [phases.setup]
-nixPkgs = ["nodejs_22"]
+nixPkgs = ["nodejs_22", "curl"]
+cmds = [
+  "curl -fsSL https://github.com/pnpm/pnpm/releases/download/v10.26.1/pnpm-linux-x64 -o /usr/local/bin/pnpm && chmod +x /usr/local/bin/pnpm"
+]
 
 [phases.install]
-cmds = ["npm install -g pnpm@10.26.1 && PATH=$(npm bin -g):$PATH pnpm install --ignore-scripts"]
+cmds = ["pnpm install --ignore-scripts"]
 
 [phases.build]
 cmds = [
-  "PATH=$(npm bin -g):$PATH BASE_PATH=/ PORT=3000 NODE_ENV=production pnpm --filter @workspace/fapex-website run build && PATH=$(npm bin -g):$PATH NODE_ENV=production pnpm --filter @workspace/api-server run build"
+  "BASE_PATH=/ PORT=3000 NODE_ENV=production pnpm --filter @workspace/fapex-website run build",
+  "NODE_ENV=production pnpm --filter @workspace/api-server run build"
 ]
 
 [start]
