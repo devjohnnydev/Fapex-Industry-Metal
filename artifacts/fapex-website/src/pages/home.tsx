@@ -753,7 +753,7 @@ export default function Home() {
 
       {/* WhatsApp floating button */}
       <a
-        href="https://wa.me/5511999999999?text=Olá%2C%20gostaria%20de%20mais%20informações%20sobre%20os%20serviços%20da%20Fapex."
+        href="https://wa.me/5511983522274?text=Olá%2C%20gostaria%20de%20mais%20informações%20sobre%20os%20serviços%20da%20Fapex."
         target="_blank"
         rel="noreferrer"
         aria-label="Fale pelo WhatsApp"
