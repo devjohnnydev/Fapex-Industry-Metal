@@ -1,0 +1,81 @@
+scheduling build on Metal builder "builder-dvhogn"
+unpacking archive
+13.2 MB
+74ms
+using build driver nixpacks-v1.41.0
+uploading snapshot
+12.4 MB
+105ms
+ 
+╔═════════════════════════════ Nixpacks v1.41.0 ═════════════════════════════╗
+║ setup      │ nodejs_18, pnpm-10_x, openssl                                 ║
+║────────────────────────────────────────────────────────────────────────────║
+║ install    │ npm install -g corepack@0.24.1 && corepack enable             ║
+║            │ pnpm i --frozen-lockfile                                      ║
+║────────────────────────────────────────────────────────────────────────────║
+║ build      │ pnpm run build                                                ║
+║────────────────────────────────────────────────────────────────────────────║
+║ start      │ node --enable-source-maps artifacts/api-server/dist/index.mjs ║
+╚════════════════════════════════════════════════════════════════════════════╝
+ 
+ 
+Saved output to:
+  snapshot-target-unpack
+
+internal
+load build definition from Dockerfile
+0ms
+
+internal
+load metadata for ghcr.io/railwayapp/nixpacks:ubuntu-1745885067
+210ms
+
+internal
+load .dockerignore
+0ms
+UndefinedVar: Usage of undefined variable '$NIXPACKS_PATH' (line 18)(https://docs.docker.com/go/dockerfile/rule/undefined-var/)
+ details: Variables should be defined before their use
+
+stage-0
+FROM ghcr.io/railwayapp/nixpacks:ubuntu-1745885067@sha256:d45c89d80e13d7ad0fd555b5130f22a866d9dd10e861f589932303ef2314c7de
+28ms
+
+internal
+load build context
+0ms
+
+stage-0
+RUN nix-env -if .nixpacks/nixpkgs-ffeebf0acf3ae8b29f8c7049cd911b9636efd7e7.nix && nix-collect-garbage -d cached
+0ms
+
+stage-0
+COPY .nixpacks/nixpkgs-ffeebf0acf3ae8b29f8c7049cd911b9636efd7e7.nix .nixpacks/nixpkgs-ffeebf0acf3ae8b29f8c7049cd911b9636efd7e7.nix cached
+0ms
+
+stage-0
+WORKDIR /app/ cached
+0ms
+
+stage-0
+COPY . /app/.
+840ms
+
+stage-0
+RUN npm install -g corepack@0.24.1 && corepack enable
+3s
+npm notice
+
+stage-0
+RUN pnpm i --frozen-lockfile
+6s
+Done in 4s using pnpm v10.26.1
+
+stage-0
+COPY . /app/.
+1s
+
+stage-0
+RUN pnpm run build
+10s
+ELIFECYCLE  Command failed with exit code 2.
+Build Failed: build daemon returned an error < failed to solve: process "/bin/bash -ol pipefail -c pnpm run build" did not complete successfully: exit code: 2
