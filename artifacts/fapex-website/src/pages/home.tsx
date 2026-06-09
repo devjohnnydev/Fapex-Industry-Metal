@@ -159,11 +159,11 @@ export default function Home() {
       }`}>
         <div className="container mx-auto px-6 md:px-12 flex justify-between items-center">
           <div className="cursor-pointer flex flex-col items-center" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>
-            {/* Clip bottom 25% of image to hide built-in subtitle */}
-            <div className="overflow-hidden" style={{ height: "72px" }}>
-              <img src="/fapex-logo-nobg.png" alt="Fapex" style={{ height: "96px", width: "auto" }} />
+            {/* Show triangle + FAPEX, clip only the image's built-in subtitle (bottom ~20%) */}
+            <div className="overflow-hidden" style={{ height: "88px" }}>
+              <img src="/fapex-logo-nobg.png" alt="Fapex" style={{ height: "110px", width: "auto" }} />
             </div>
-            <span className="text-white/60 text-[9px] font-medium tracking-[0.12em] uppercase text-center leading-tight mt-0.5">
+            <span className="text-white/55 text-[8px] font-medium tracking-[0.1em] uppercase text-center leading-tight mt-1" style={{ maxWidth: "88px" }}>
               Comércio de Resíduos e Metais LTDA
             </span>
           </div>
