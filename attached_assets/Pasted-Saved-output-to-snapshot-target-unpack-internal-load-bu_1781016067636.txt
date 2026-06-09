@@ -1,0 +1,79 @@
+Saved output to:
+  snapshot-target-unpack
+
+internal
+load build definition from Dockerfile
+0ms
+
+internal
+load metadata for ghcr.io/railwayapp/nixpacks:ubuntu-1745885067
+167ms
+
+internal
+load .dockerignore
+0ms
+UndefinedVar: Usage of undefined variable '$NIXPACKS_PATH' (line 18)(https://docs.docker.com/go/dockerfile/rule/undefined-var/)
+ details: Variables should be defined before their use
+
+internal
+load build context
+0ms
+
+stage-0
+WORKDIR /app/ cached
+0ms
+
+stage-0
+COPY .nixpacks/nixpkgs-ffeebf0acf3ae8b29f8c7049cd911b9636efd7e7.nix .nixpacks/nixpkgs-ffeebf0acf3ae8b29f8c7049cd911b9636efd7e7.nix
+659ms
+
+stage-0
+RUN nix-env -if .nixpacks/nixpkgs-ffeebf0acf3ae8b29f8c7049cd911b9636efd7e7.nix && nix-collect-garbage -d
+44s
+61 store paths deleted, 561.19 MiB freed
+
+stage-0
+COPY . /app/.
+1s
+
+stage-0
+RUN npm install -g corepack@0.24.1 && corepack enable
+1s
+changed 1 package in 827ms
+
+stage-0
+RUN pnpm i --frozen-lockfile
+6s
+Done in 4.8s using pnpm v10.26.1
+
+stage-0
+COPY . /app/.
+1s
+
+stage-0
+RUN pnpm run build
+23s
+artifacts/fapex-website build: Done
+
+stage-0
+RUN printf '\nPATH=/app/node_modules/.bin:$PATH' >> /root/.profile
+1s
+
+stage-0
+COPY . /app
+2s
+
+exporting to docker image format
+10s
+containerimage.digest: sha256:9c8ff8c44aec4db91e9dd583a48fc44d7b828dbb00d1440b3c9c64bcc78fbaa7
+containerimage.descriptor: eyJtZWRpYVR5cGUiOiJhcHBsaWNhdGlvbi92bmQub2NpLmltYWdlLm1hbmlmZXN0LnYxK2pzb24iLCJkaWdlc3QiOiJzaGEyNTY6OWM4ZmY4YzQ0YWVjNGRiOTFlOWRkNTgzYTQ4ZmM0NGQ3YjgyOGRiYjAwZDE0NDBiM2M5YzY0YmNjNzhmYmFhNyIsInNpemUiOjI5NTksImFubm90YXRpb25zIjp7Im9yZy5vcGVuY29udGFpbmVycy5pbWFnZS5jcmVhdGVkIjoiMjAyNi0wNi0wOVQxNDozOToxNVoifSwicGxhdGZvcm0iOnsiYXJjaGl0ZWN0dXJlIjoiYW1kNjQiLCJvcyI6ImxpbnV4In19
+containerimage.config.digest: sha256:0e7a057abcf4e6071d392ad47afb9ab492bac2c0dc671f7ae42b5747194f9270
+image push
+363.5 MB
+49.2s
+====================
+Starting Healthcheck
+====================
+Retry window: 5m0s
+ 
+Attempt #1 failed with service unavailable. Continuing to retry for 4m49s
