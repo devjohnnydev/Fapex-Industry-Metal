@@ -104,7 +104,7 @@ export default function Home() {
       }`}>
         <div className="container mx-auto px-6 md:px-12 flex justify-between items-center">
           <div className="flex items-center cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>
-            <img src="/fapex-logo-nobg.png" alt="Fapex" className="h-14 md:h-16 w-auto" />
+            <img src="/fapex-logo-nobg.png" alt="Fapex" className="h-20 md:h-24 w-auto" />
           </div>
 
           <div className="hidden md:flex items-center gap-8">
@@ -573,7 +573,7 @@ export default function Home() {
         <div className="container mx-auto px-6 md:px-12">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-10 mb-10">
             <div className="md:col-span-2">
-              <img src="/fapex-logo-nobg.png" alt="Fapex" className="h-16 mb-4" />
+              <img src="/fapex-logo-nobg.png" alt="Fapex" className="h-24 mb-4" />
               <p className="text-white/40 text-sm max-w-xs leading-relaxed">
                 Soluções inteligentes e sustentáveis para o comércio de resíduos e metais industriais.
               </p>

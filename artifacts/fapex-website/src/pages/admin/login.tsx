@@ -38,7 +38,7 @@ export default function AdminLogin() {
     <div className="min-h-screen bg-[#111] flex items-center justify-center px-4">
       <div className="w-full max-w-sm bg-[#1a1a1a] border border-white/10 rounded-lg p-8">
         <div className="flex flex-col items-center mb-8">
-          <img src="/fapex-logo-nobg.png" alt="Fapex" className="h-20 mb-4" />
+          <img src="/fapex-logo-nobg.png" alt="Fapex" className="h-28 mb-4" />
           <h1 className="text-white text-xl font-bold">Área Administrativa</h1>
         </div>
         <form onSubmit={handleSubmit} className="space-y-4">
