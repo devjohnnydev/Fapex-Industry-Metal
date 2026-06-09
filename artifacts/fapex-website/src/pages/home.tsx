@@ -91,7 +91,7 @@ export default function Home() {
       >
         <div className="container mx-auto px-6 md:px-12 flex justify-between items-center">
           <div className="flex items-center cursor-pointer" onClick={() => window.scrollTo({top: 0, behavior: "smooth"})}>
-            <img src="/fapex-logo.png" alt="Fapex Logo" className="h-10 md:h-12 w-auto" />
+            <img src="/fapex-logo.png" alt="Fapex Logo" className="h-16 md:h-20 w-auto" />
           </div>
 
           <div className="hidden md:flex items-center space-x-8">
