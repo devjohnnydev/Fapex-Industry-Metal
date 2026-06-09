@@ -171,13 +171,8 @@ export default function Home() {
           <img src="/images/hero-bg.png" alt="Fapex" className="w-full h-full object-cover object-center" />
         </motion.div>
 
-        <div className="container mx-auto px-6 md:px-12 relative z-20 pt-20">
+        <div className="container mx-auto px-6 md:px-12 relative z-20 pt-28">
           <motion.div initial="hidden" animate="visible" variants={staggerContainer} className="max-w-3xl">
-            <motion.div variants={fadeInUp} className="flex items-center gap-3 mb-6">
-              <div className="h-[3px] w-10 bg-green-400" />
-              <span className="text-green-400 text-sm font-semibold uppercase tracking-widest">Fapex Resíduos e Metais</span>
-            </motion.div>
-
             <motion.h1 variants={fadeInUp}
               className="text-5xl md:text-7xl lg:text-8xl font-black text-white leading-[1.05] tracking-tight mb-6">
               FORÇA<br />
