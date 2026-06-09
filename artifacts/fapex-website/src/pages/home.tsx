@@ -181,8 +181,15 @@ export default function Home() {
           : "bg-transparent py-2"
       }`}>
         <div className="container mx-auto px-6 md:px-12 flex justify-between items-center">
-          <div className="cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>
-            <img src="/fapex-logo-nobg.png" alt="Fapex" style={{ height: "110px", width: "auto" }} />
+          <div
+            className="cursor-pointer"
+            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          >
+            <img
+              src="/fapex-logo-nobg.png"
+              alt="Fapex"
+              style={{ height: "130px", width: "auto" }}
+            />
           </div>
 
           <div className="hidden md:flex items-center gap-8">
