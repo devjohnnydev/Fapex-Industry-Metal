@@ -91,7 +91,7 @@ export default function Home() {
       >
         <div className="container mx-auto px-6 md:px-12 flex justify-between items-center">
           <div className="flex items-center cursor-pointer" onClick={() => window.scrollTo({top: 0, behavior: "smooth"})}>
-            <img src="/fapex-logo.png" alt="Fapex Logo" className="h-16 md:h-20 w-auto" />
+            <img src="/fapex-logo-nobg.png" alt="Fapex Logo" className="h-16 md:h-20 w-auto" />
           </div>
 
           <div className="hidden md:flex items-center space-x-8">
@@ -171,10 +171,6 @@ export default function Home() {
             variants={staggerContainer}
             className="max-w-4xl"
           >
-            <motion.div variants={fadeInUp} className="flex items-center space-x-3 mb-6">
-              <div className="h-[2px] w-12 bg-primary"></div>
-              <span className="text-primary font-semibold tracking-widest uppercase text-sm">Resíduos e Metais</span>
-            </motion.div>
             
             <motion.h1 
               variants={fadeInUp}
@@ -576,7 +572,7 @@ export default function Home() {
         <div className="container mx-auto px-6 md:px-12">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
             <div className="md:col-span-2">
-              <img src="/fapex-logo.png" alt="Fapex" className="h-12 mb-6" />
+              <img src="/fapex-logo-nobg.png" alt="Fapex" className="h-16 mb-6" />
               <p className="text-foreground/60 max-w-sm">
                 Soluções inteligentes e sustentáveis para o comércio de resíduos e metais industriais. Transformando passivos em ativos na economia circular.
               </p>
