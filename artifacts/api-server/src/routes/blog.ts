@@ -39,7 +39,10 @@ router.get("/:id", async (req, res) => {
       .select()
       .from(blogPostsTable)
       .where(eq(blogPostsTable.id, id));
-    if (!post) return res.status(404).json({ error: "Post não encontrado" });
+    if (!post) {
+      res.status(404).json({ error: "Post não encontrado" });
+      return;
+    }
     res.json(post);
   } catch (err) {
     req.log.error({ err }, "Failed to fetch blog post");
@@ -101,7 +104,10 @@ router.put("/:id", requireAdmin, async (req, res) => {
       })
       .where(eq(blogPostsTable.id, id))
       .returning();
-    if (!post) return res.status(404).json({ error: "Post não encontrado" });
+    if (!post) {
+      res.status(404).json({ error: "Post não encontrado" });
+      return;
+    }
     res.json(post);
   } catch (err) {
     req.log.error({ err }, "Failed to update blog post");
