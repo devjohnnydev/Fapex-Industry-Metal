@@ -29,8 +29,8 @@ outputType = "webview"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "PORT=8081 pnpm --filter @workspace/fapex-website run dev"
-waitForPort = 8081
+args = "PORT=23448 pnpm --filter @workspace/fapex-website run dev"
+waitForPort = 23448
 
 [agent]
 stack = "PNPM_WORKSPACE"
