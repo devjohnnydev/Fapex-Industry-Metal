@@ -48,9 +48,64 @@ function formatDate(dateStr: string) {
   } catch { return ""; }
 }
 
+interface ServiceDetail {
+  icon: React.ElementType;
+  title: string;
+  desc: string;
+  longDesc: string;
+  highlights: string[];
+  cta: string;
+}
+
+const serviceDetails: ServiceDetail[] = [
+  {
+    icon: Scale,
+    title: "Compra e Venda",
+    desc: "Comercialização em grande escala de sucatas metálicas ferrosas e não-ferrosas com as melhores condições de mercado.",
+    longDesc: "Somos referência nacional na comercialização de sucatas metálicas, atuando com total transparência e agilidade. Trabalhamos com grandes volumes e oferecemos as melhores cotações do mercado, sempre alinhadas com os preços das bolsas internacionais.",
+    highlights: [
+      "Compra de ferro, aço, alumínio, cobre e ligas especiais",
+      "Cotação imediata e pagamento no prazo combinado",
+      "Logística própria para coleta em todo o território nacional",
+      "Pesagem certificada e rastreabilidade completa",
+      "Contratos de fornecimento de longo prazo",
+    ],
+    cta: "Solicitar Cotação",
+  },
+  {
+    icon: Recycle,
+    title: "Gestão e Destinação",
+    desc: "Coleta, transporte e destinação ambientalmente correta de resíduos industriais com emissão de certificados CADRI e CDF.",
+    longDesc: "Oferecemos uma solução completa para a gestão de resíduos industriais, garantindo conformidade com a legislação ambiental vigente. Nossa equipe técnica acompanha todo o processo, desde a coleta até a emissão da documentação legal.",
+    highlights: [
+      "Emissão de CADRI (Certificado de Aprovação de Destinação de Resíduos Industriais)",
+      "CDF (Certificado de Destinação Final) para todos os materiais",
+      "Transporte licenciado e veículos rastreados",
+      "Plano de Gerenciamento de Resíduos Sólidos (PGRS)",
+      "Conformidade com a PNRS (Política Nacional de Resíduos Sólidos)",
+    ],
+    cta: "Falar com Especialista",
+  },
+  {
+    icon: TrendingUp,
+    title: "Assessoria",
+    desc: "Consultoria especializada para empresas no gerenciamento inteligente de resíduos e passivos com total conformidade legal.",
+    longDesc: "Nossa assessoria técnica e ambiental ajuda sua empresa a transformar o gerenciamento de resíduos em uma vantagem competitiva. Desenvolvemos soluções personalizadas que reduzem custos, garantem conformidade legal e geram valor ao negócio.",
+    highlights: [
+      "Diagnóstico completo do passivo ambiental da empresa",
+      "Elaboração e implementação do PGRS",
+      "Treinamento das equipes internas",
+      "Acompanhamento de auditorias e fiscalizações",
+      "Relatórios de sustentabilidade e ESG",
+    ],
+    cta: "Agendar Diagnóstico",
+  },
+];
+
 export default function Home() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [selectedService, setSelectedService] = useState<ServiceDetail | null>(null);
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
   const [galleryPhotos, setGalleryPhotos] = useState<GalleryPhoto[]>([]);
   const { toast } = useToast();
@@ -284,24 +339,24 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {[
-              { icon: Scale, title: "Compra e Venda", desc: "Comercialização em grande escala de sucatas metálicas ferrosas e não-ferrosas com as melhores condições de mercado." },
-              { icon: Recycle, title: "Gestão e Destinação", desc: "Coleta, transporte e destinação ambientalmente correta de resíduos industriais com emissão de certificados CADRI e CDF." },
-              { icon: TrendingUp, title: "Assessoria", desc: "Consultoria especializada para empresas no gerenciamento inteligente de resíduos e passivos com total conformidade legal." },
-            ].map(({ icon: Icon, title, desc }, i) => (
-              <motion.div key={i} initial="hidden" whileInView="visible" viewport={{ once: true }}
-                variants={{ hidden: { opacity: 0, y: 30 }, visible: { opacity: 1, y: 0, transition: { delay: i * 0.1, duration: 0.5 } } }}
-                className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-8 hover:border-green-500 hover:shadow-lg transition-all group rounded-sm">
-                <div className="p-3 bg-green-50 dark:bg-green-900/30 rounded-lg w-fit mb-5 group-hover:bg-green-100 dark:group-hover:bg-green-900/50 transition-colors">
-                  <Icon className="h-7 w-7 text-green-600 dark:text-green-400" />
-                </div>
-                <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">{title}</h3>
-                <p className="text-gray-500 dark:text-gray-400 leading-relaxed text-sm">{desc}</p>
-                <div className="mt-5 flex items-center gap-1 text-green-600 dark:text-green-400 text-sm font-semibold group-hover:gap-2 transition-all">
-                  <span>Saiba mais</span><ChevronRight className="h-4 w-4" />
-                </div>
-              </motion.div>
-            ))}
+            {serviceDetails.map((svc, i) => {
+              const Icon = svc.icon;
+              return (
+                <motion.div key={i} initial="hidden" whileInView="visible" viewport={{ once: true }}
+                  variants={{ hidden: { opacity: 0, y: 30 }, visible: { opacity: 1, y: 0, transition: { delay: i * 0.1, duration: 0.5 } } }}
+                  className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-8 hover:border-green-500 hover:shadow-lg transition-all group rounded-sm cursor-pointer"
+                  onClick={() => setSelectedService(svc)}>
+                  <div className="p-3 bg-green-50 dark:bg-green-900/30 rounded-lg w-fit mb-5 group-hover:bg-green-100 dark:group-hover:bg-green-900/50 transition-colors">
+                    <Icon className="h-7 w-7 text-green-600 dark:text-green-400" />
+                  </div>
+                  <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">{svc.title}</h3>
+                  <p className="text-gray-500 dark:text-gray-400 leading-relaxed text-sm">{svc.desc}</p>
+                  <div className="mt-5 flex items-center gap-1 text-green-600 dark:text-green-400 text-sm font-semibold group-hover:gap-2 transition-all">
+                    <span>Saiba mais</span><ChevronRight className="h-4 w-4" />
+                  </div>
+                </motion.div>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -610,6 +665,89 @@ export default function Home() {
           </div>
         </div>
       </footer>
+
+      {/* ── SERVICE MODAL ── */}
+      <AnimatePresence>
+        {selectedService && (() => {
+          const Icon = selectedService.icon;
+          return (
+            <motion.div
+              key="service-modal-backdrop"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-8"
+              onClick={() => setSelectedService(null)}
+            >
+              {/* Backdrop blur */}
+              <div className="absolute inset-0 bg-black/60 backdrop-blur-md" />
+
+              <motion.div
+                key="service-modal-card"
+                initial={{ opacity: 0, scale: 0.92, y: 24 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.92, y: 24 }}
+                transition={{ duration: 0.3, ease: "easeOut" as const }}
+                className="relative z-10 w-full max-w-lg"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {/* Glass card */}
+                <div className="relative overflow-hidden rounded-2xl border border-white/20 bg-white/10 backdrop-blur-xl shadow-2xl">
+                  {/* Green gradient top bar */}
+                  <div className="h-1 w-full bg-gradient-to-r from-green-400 via-green-500 to-emerald-600" />
+
+                  <div className="p-8">
+                    {/* Close button */}
+                    <button
+                      onClick={() => setSelectedService(null)}
+                      className="absolute top-5 right-5 p-1.5 rounded-full bg-white/10 hover:bg-white/20 text-white/70 hover:text-white transition-all"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+
+                    {/* Icon + title */}
+                    <div className="flex items-center gap-4 mb-6">
+                      <div className="p-3.5 bg-green-500/20 rounded-xl border border-green-400/30">
+                        <Icon className="h-7 w-7 text-green-400" />
+                      </div>
+                      <h2 className="text-2xl font-bold text-white">{selectedService.title}</h2>
+                    </div>
+
+                    {/* Long description */}
+                    <p className="text-white/75 leading-relaxed mb-7 text-sm">
+                      {selectedService.longDesc}
+                    </p>
+
+                    {/* Highlights */}
+                    <div className="space-y-2.5 mb-8">
+                      {selectedService.highlights.map((h, i) => (
+                        <div key={i} className="flex items-start gap-3">
+                          <div className="mt-0.5 h-5 w-5 flex-shrink-0 rounded-full bg-green-500/20 border border-green-400/40 flex items-center justify-center">
+                            <CheckCircle2 className="h-3 w-3 text-green-400" />
+                          </div>
+                          <span className="text-white/80 text-sm leading-snug">{h}</span>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* CTA */}
+                    <button
+                      onClick={() => {
+                        setSelectedService(null);
+                        document.getElementById("contato")?.scrollIntoView({ behavior: "smooth" });
+                      }}
+                      className="w-full py-3 rounded-xl bg-green-500 hover:bg-green-400 text-white font-semibold text-sm transition-all flex items-center justify-center gap-2 shadow-lg shadow-green-500/25"
+                    >
+                      {selectedService.cta} <ArrowRight className="h-4 w-4" />
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            </motion.div>
+          );
+        })()}
+      </AnimatePresence>
     </div>
   );
 }
