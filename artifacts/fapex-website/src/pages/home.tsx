@@ -126,10 +126,33 @@ export default function Home() {
     apiJson<GalleryPhoto[]>("/gallery").then(setGalleryPhotos).catch(() => {});
   }, []);
 
-  const handleContactSubmit = (e: React.FormEvent) => {
+  const [contactSending, setContactSending] = useState(false);
+
+  const handleContactSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    toast({ title: "Mensagem enviada!", description: "Nossa equipe entrará em contato em breve." });
-    (e.target as HTMLFormElement).reset();
+    const form = e.currentTarget;
+    const data = new FormData(form);
+    setContactSending(true);
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: data.get("name") as string,
+          company: data.get("company") as string,
+          email: data.get("email") as string,
+          phone: data.get("phone") as string,
+          message: data.get("message") as string,
+        }),
+      });
+      if (!res.ok) throw new Error("Erro");
+      toast({ title: "Mensagem enviada!", description: "Nossa equipe entrará em contato em breve." });
+      form.reset();
+    } catch {
+      toast({ title: "Erro ao enviar", description: "Tente novamente ou entre em contato pelo WhatsApp.", variant: "destructive" });
+    } finally {
+      setContactSending(false);
+    }
   };
 
   const scrollToSection = (id: string) => {
@@ -587,35 +610,35 @@ export default function Home() {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <Label className="text-white/60 text-sm mb-1 block">Nome *</Label>
-                    <Input required placeholder="Seu nome"
+                    <Input name="name" required placeholder="Seu nome"
                       className="bg-white/5 border-white/10 text-white placeholder:text-white/30 rounded-none" />
                   </div>
                   <div>
                     <Label className="text-white/60 text-sm mb-1 block">Empresa</Label>
-                    <Input placeholder="Empresa (opcional)"
+                    <Input name="company" placeholder="Empresa (opcional)"
                       className="bg-white/5 border-white/10 text-white placeholder:text-white/30 rounded-none" />
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <Label className="text-white/60 text-sm mb-1 block">E-mail *</Label>
-                    <Input required type="email" placeholder="email@empresa.com"
+                    <Input name="email" required type="email" placeholder="email@empresa.com"
                       className="bg-white/5 border-white/10 text-white placeholder:text-white/30 rounded-none" />
                   </div>
                   <div>
                     <Label className="text-white/60 text-sm mb-1 block">Telefone</Label>
-                    <Input placeholder="(11) 00000-0000"
+                    <Input name="phone" placeholder="(11) 00000-0000"
                       className="bg-white/5 border-white/10 text-white placeholder:text-white/30 rounded-none" />
                   </div>
                 </div>
                 <div>
                   <Label className="text-white/60 text-sm mb-1 block">Mensagem *</Label>
-                  <Textarea required rows={5} placeholder="Descreva o material, volume estimado..."
+                  <Textarea name="message" required rows={5} placeholder="Descreva o material, volume estimado..."
                     className="bg-white/5 border-white/10 text-white placeholder:text-white/30 rounded-none resize-none" />
                 </div>
-                <Button type="submit"
-                  className="w-full bg-green-600 hover:bg-green-500 text-white rounded-none h-12 font-bold tracking-wide">
-                  ENVIAR MENSAGEM
+                <Button type="submit" disabled={contactSending}
+                  className="w-full bg-green-600 hover:bg-green-500 text-white rounded-none h-12 font-bold tracking-wide disabled:opacity-60">
+                  {contactSending ? "ENVIANDO..." : "ENVIAR MENSAGEM"}
                 </Button>
               </form>
             </motion.div>

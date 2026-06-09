@@ -4,6 +4,7 @@ import adminRouter from "./admin";
 import blogRouter from "./blog";
 import galleryRouter from "./gallery";
 import uploadRouter from "./upload";
+import contactRouter from "./contact";
 
 const router: IRouter = Router();
 
@@ -12,5 +13,6 @@ router.use("/admin", adminRouter);
 router.use("/blog-posts", blogRouter);
 router.use("/gallery", galleryRouter);
 router.use("/uploads-handler", uploadRouter);
+router.use("/contact", contactRouter);
 
 export default router;
