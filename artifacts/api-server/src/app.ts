@@ -75,7 +75,7 @@ if (isProd) {
   if (fs.existsSync(frontendDist)) {
     app.use(express.static(frontendDist));
     // SPA fallback — send index.html for any non-/api route
-    app.get("/{*path}", (_req, res) => {
+    app.get("/:path*", (_req, res) => {
       res.sendFile(path.join(frontendDist, "index.html"));
     });
     logger.info({ frontendDist }, "Serving frontend static files");
