@@ -99,8 +99,8 @@ export default function Home() {
       {/* ── NAVIGATION ── */}
       <nav className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
         isScrolled
-          ? "bg-[#111]/95 dark:bg-[#0a0a0a]/98 backdrop-blur-md py-3 shadow-lg"
-          : "bg-transparent py-5"
+          ? "bg-[#111]/95 dark:bg-[#0a0a0a]/98 backdrop-blur-md py-2 shadow-lg"
+          : "bg-transparent py-3"
       }`}>
         <div className="container mx-auto px-6 md:px-12 flex justify-between items-center">
           <div className="flex items-center cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>
@@ -171,7 +171,7 @@ export default function Home() {
           <img src="/images/hero-bg.png" alt="Fapex" className="w-full h-full object-cover object-center" />
         </motion.div>
 
-        <div className="container mx-auto px-6 md:px-12 relative z-20 pt-28">
+        <div className="container mx-auto px-6 md:px-12 relative z-20 pt-36 md:pt-32">
           <motion.div initial="hidden" animate="visible" variants={staggerContainer} className="max-w-3xl">
             <motion.h1 variants={fadeInUp}
               className="text-5xl md:text-7xl lg:text-8xl font-black text-white leading-[1.05] tracking-tight mb-6">
