@@ -180,15 +180,6 @@ export default function Home() {
               {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
             </button>
 
-            {/* Admin gear icon */}
-            <a
-              href="/admin"
-              title="Área Administrativa"
-              className="p-2 rounded-full text-white/40 hover:text-white/80 hover:bg-white/10 transition-all"
-            >
-              <Settings className="h-4 w-4" />
-            </a>
-
             <Button onClick={() => scrollToSection("contato")}
               className="bg-green-600 hover:bg-green-500 text-white rounded-none px-6 font-bold tracking-wide">
               Fale Conosco
@@ -199,9 +190,6 @@ export default function Home() {
             <button onClick={toggleTheme} className="p-2 text-white/70 hover:text-white transition-colors" aria-label="Alternar tema">
               {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
             </button>
-            <a href="/admin" className="p-2 text-white/40 hover:text-white/80 transition-colors" title="Área Administrativa">
-              <Settings className="h-4 w-4" />
-            </a>
             <button className="text-white" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
               {mobileMenuOpen ? <X size={26} /> : <Menu size={26} />}
             </button>
@@ -672,7 +660,9 @@ export default function Home() {
                 {theme === "dark" ? <Sun className="h-3 w-3" /> : <Moon className="h-3 w-3" />}
                 {theme === "dark" ? "Modo claro" : "Modo escuro"}
               </button>
-              <a href="/admin" className="text-white/15 text-xs hover:text-white/40 transition-colors">Admin</a>
+              <a href="/admin" title="Área Administrativa" className="text-white/20 hover:text-white/50 transition-colors">
+                <Settings className="h-3.5 w-3.5" />
+              </a>
             </div>
           </div>
         </div>
