@@ -29,7 +29,7 @@ interface GalleryPhoto {
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 40 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" as const } },
 };
 const staggerContainer = {
   hidden: { opacity: 0 },
@@ -37,7 +37,7 @@ const staggerContainer = {
 };
 const scaleIn = {
   hidden: { opacity: 0, scale: 0.93 },
-  visible: { opacity: 1, scale: 1, transition: { duration: 0.55, ease: "easeOut" } },
+  visible: { opacity: 1, scale: 1, transition: { duration: 0.55, ease: "easeOut" as const } },
 };
 
 function formatDate(dateStr: string) {
