@@ -1,0 +1,99 @@
+You reached the start of the range
+Jun 9, 2026, 12:51 PM
+fetched snapshot sha256:fd77e79c9255be11a93f588da34e32d008ae4524fc9af3e6bdbace123aaceec4 (13 MB bytes)
+fetching snapshot
+12.6 MB
+602ms
+unpacking archive
+13.4 MB
+91ms
+using build driver nixpacks-v1.41.0
+ 
+╔═════════════════════════════ Nixpacks v1.41.0 ═════════════════════════════╗
+║ setup      │ nodejs_22, pnpm-10_x, openssl                                 ║
+║────────────────────────────────────────────────────────────────────────────║
+║ install    │ npm install -g corepack@0.24.1 && corepack enable             ║
+║            │ pnpm i --frozen-lockfile                                      ║
+║────────────────────────────────────────────────────────────────────────────║
+║ build      │ pnpm run build                                                ║
+║────────────────────────────────────────────────────────────────────────────║
+║ start      │ node --enable-source-maps artifacts/api-server/dist/index.mjs ║
+╚════════════════════════════════════════════════════════════════════════════╝
+ 
+ 
+Saved output to:
+  snapshot-target-unpack
+
+internal
+load build definition from Dockerfile
+0ms
+scheduling build on Metal builder "builder-yfchqq"
+
+internal
+load metadata for ghcr.io/railwayapp/nixpacks:ubuntu-1745885067
+511ms
+
+internal
+load .dockerignore
+0ms
+UndefinedVar: Usage of undefined variable '$NIXPACKS_PATH' (line 18)(https://docs.docker.com/go/dockerfile/rule/undefined-var/)
+ details: Variables should be defined before their use
+
+internal
+load build context
+1ms
+
+stage-0
+FROM ghcr.io/railwayapp/nixpacks:ubuntu-1745885067@sha256:d45c89d80e13d7ad0fd555b5130f22a866d9dd10e861f589932303ef2314c7de
+383ms
+
+stage-0
+WORKDIR /app/ cached
+186ms
+
+stage-0
+COPY .nixpacks/nixpkgs-ffeebf0acf3ae8b29f8c7049cd911b9636efd7e7.nix .nixpacks/nixpkgs-ffeebf0acf3ae8b29f8c7049cd911b9636efd7e7.nix
+2s
+
+stage-0
+RUN nix-env -if .nixpacks/nixpkgs-ffeebf0acf3ae8b29f8c7049cd911b9636efd7e7.nix && nix-collect-garbage -d
+39s
+61 store paths deleted, 561.19 MiB freed
+
+stage-0
+COPY . /app/.
+1s
+
+stage-0
+RUN npm install -g corepack@0.24.1 && corepack enable
+5s
+changed 1 package in 2s
+
+stage-0
+RUN pnpm i --frozen-lockfile
+8s
+Done in 4.8s using pnpm v10.26.1
+
+stage-0
+COPY . /app/.
+8s
+
+stage-0
+RUN pnpm run build
+32s
+artifacts/fapex-website build: Done
+
+stage-0
+RUN printf '\nPATH=/app/node_modules/.bin:$PATH' >> /root/.profile
+5s
+
+stage-0
+COPY . /app
+1s
+
+exporting to docker image format
+19s
+containerimage.config.digest: sha256:02d5462869a83f9e8724661374c92028139bdfca07ffd1d61e5c77b486474a92
+containerimage.digest: sha256:a608fcb01e87abce108cb70f3b8a4cd5585bedaf6f2c4c76488bc1329fcc2791
+containerimage.descriptor: eyJtZWRpYVR5cGUiOiJhcHBsaWNhdGlvbi92bmQub2NpLmltYWdlLm1hbmlmZXN0LnYxK2pzb24iLCJkaWdlc3QiOiJzaGEyNTY6YTYwOGZjYjAxZTg3YWJjZTEwOGNiNzBmM2I4YTRjZDU1ODViZWRhZjZmMmM0Yzc2NDg4YmMxMzI5ZmNjMjc5MSIsInNpemUiOjI5NTksImFubm90YXRpb25zIjp7Im9yZy5vcGVuY29udGFpbmVycy5pbWFnZS5jcmVhdGVkIjoiMjAyNi0wNi0wOVQxNTo1ODo0MFoifSwicGxhdGZvcm0iOnsiYXJjaGl0ZWN0dXJlIjoiYW1kNjQiLCJvcyI6ImxpbnV4In19
+image push
