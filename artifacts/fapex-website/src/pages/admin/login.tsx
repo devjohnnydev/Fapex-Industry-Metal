@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { useLocation } from "wouter";
+import { useLocation, Link } from "wouter";
 import { apiFetch } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Lock } from "lucide-react";
+import { Lock, ArrowLeft } from "lucide-react";
 
 export default function AdminLogin() {
   const [, setLocation] = useLocation();
@@ -66,6 +66,13 @@ export default function AdminLogin() {
             <Lock className="h-4 w-4 mr-2" />
             {loading ? "Entrando..." : "Entrar"}
           </Button>
+          
+          <div className="mt-6 pt-6 text-center">
+            <Link href="/" className="inline-flex items-center gap-2 text-sm text-white/50 hover:text-white transition-colors">
+              <ArrowLeft className="h-4 w-4" />
+              Voltar para o site
+            </Link>
+          </div>
         </form>
       </div>
     </div>
