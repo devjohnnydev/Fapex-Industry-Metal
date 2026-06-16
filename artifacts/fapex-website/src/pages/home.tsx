@@ -4,7 +4,7 @@ import {
   Menu, X, Mail, MapPin, Phone,
   Leaf, ShieldCheck, Factory, Recycle, Scale,
   TrendingUp, CheckCircle2, ArrowRight, ChevronRight, Images,
-  Sun, Moon, Settings,
+  Sun, Moon, Settings, Instagram, Facebook, Linkedin,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -108,6 +108,7 @@ export default function Home() {
   const [selectedService, setSelectedService] = useState<ServiceDetail | null>(null);
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
   const [galleryPhotos, setGalleryPhotos] = useState<GalleryPhoto[]>([]);
+  const [siteSettings, setSiteSettings] = useState<any>(null);
   const { toast } = useToast();
   const { theme, toggleTheme } = useTheme();
 
@@ -124,6 +125,7 @@ export default function Home() {
   useEffect(() => {
     apiJson<BlogPost[]>("/blog-posts").then(setBlogPosts).catch(() => {});
     apiJson<GalleryPhoto[]>("/gallery").then(setGalleryPhotos).catch(() => {});
+    apiJson<any>("/settings").then(setSiteSettings).catch(() => {});
   }, []);
 
   const [contactSending, setContactSending] = useState(false);
@@ -588,9 +590,9 @@ export default function Home() {
 
               <div className="space-y-6">
                 {[
-                  { icon: MapPin, label: "Localização", value: "São Paulo, SP - Brasil" },
-                  { icon: Phone, label: "Telefone", value: "(11) 0000-0000" },
-                  { icon: Mail, label: "E-mail", value: "contato@fapex.com.br" },
+                  { icon: MapPin, label: "Localização", value: siteSettings?.contact?.address || "São Paulo, SP - Brasil" },
+                  { icon: Phone, label: "Telefone", value: siteSettings?.contact?.phone || "(11) 0000-0000" },
+                  { icon: Mail, label: "E-mail", value: siteSettings?.contact?.email || "contato@fapex.com.br" },
                 ].map(({ icon: Icon, label, value }) => (
                   <motion.div key={label} variants={fadeInUp} className="flex items-center gap-5">
                     <div className="p-3 bg-green-600/20 rounded-lg shrink-0">
@@ -606,7 +608,7 @@ export default function Home() {
 
               <motion.div variants={fadeInUp} className="mt-10 p-4 border border-white/10 rounded">
                 <p className="text-white/40 text-xs mb-1 uppercase tracking-wider">CNPJ</p>
-                <p className="text-white/70 font-mono">60.147.676/0001-34</p>
+                <p className="text-white/70 font-mono">{siteSettings?.company?.cnpj || "60.147.676/0001-34"}</p>
               </motion.div>
             </motion.div>
 
@@ -675,10 +677,28 @@ export default function Home() {
             <div>
               <h4 className="text-white/60 text-xs uppercase tracking-widest font-semibold mb-4">Contato</h4>
               <ul className="space-y-2 text-white/35 text-sm">
-                <li>São Paulo, SP</li>
-                <li>contato@fapex.com.br</li>
-                <li>(11) 0000-0000</li>
+                <li>{siteSettings?.contact?.address || "São Paulo, SP"}</li>
+                <li>{siteSettings?.contact?.email || "contato@fapex.com.br"}</li>
+                <li>{siteSettings?.contact?.phone || "(11) 0000-0000"}</li>
               </ul>
+              {/* Redes Sociais */}
+              <div className="flex gap-4 mt-5">
+                {siteSettings?.social?.instagram && (
+                  <a href={siteSettings.social.instagram} target="_blank" rel="noreferrer" title="Instagram" className="text-white/40 hover:text-white hover:scale-110 transition-all">
+                    <Instagram className="h-5 w-5" />
+                  </a>
+                )}
+                {siteSettings?.social?.facebook && (
+                  <a href={siteSettings.social.facebook} target="_blank" rel="noreferrer" title="Facebook" className="text-white/40 hover:text-white hover:scale-110 transition-all">
+                    <Facebook className="h-5 w-5" />
+                  </a>
+                )}
+                {siteSettings?.social?.linkedin && (
+                  <a href={siteSettings.social.linkedin} target="_blank" rel="noreferrer" title="LinkedIn" className="text-white/40 hover:text-white hover:scale-110 transition-all">
+                    <Linkedin className="h-5 w-5" />
+                  </a>
+                )}
+              </div>
             </div>
           </div>
           <div className="border-t border-white/5 pt-6 flex flex-col md:flex-row justify-between items-center gap-3">
@@ -783,7 +803,7 @@ export default function Home() {
 
       {/* WhatsApp floating button */}
       <a
-        href="https://wa.me/5511983522274?text=Olá%2C%20gostaria%20de%20solicitar%20uma%20cotação%20para%20os%20serviços%20da%20Fapex%20Comércio%20de%20Resíduos%20e%20Metais."
+        href={siteSettings?.social?.whatsapp || "https://wa.me/5511983522274?text=Olá%2C%20gostaria%20de%20solicitar%20uma%20cotação%20para%20os%20serviços%20da%20Fapex%20Comércio%20de%20Resíduos%20e%20Metais."}
         target="_blank"
         rel="noreferrer"
         aria-label="Fale pelo WhatsApp"
