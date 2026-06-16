@@ -685,7 +685,7 @@ export default function Home() {
             <p className="text-white/20 text-xs">
               &copy; {new Date().getFullYear()} Fapex Indústria e Comércio de Resíduos e Metais LTDA. Todos os direitos reservados.
             </p>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-4 mr-20">
               <button onClick={toggleTheme} className="text-white/20 text-xs hover:text-white/50 transition-colors flex items-center gap-1.5">
                 {theme === "dark" ? <Sun className="h-3 w-3" /> : <Moon className="h-3 w-3" />}
                 {theme === "dark" ? "Modo claro" : "Modo escuro"}

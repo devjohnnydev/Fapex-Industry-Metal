@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import AdminLayout from "./layout";
-import { apiFetch } from "@/lib/api";
+import { apiFetch, apiJson } from "@/lib/api";
 import { Trash2, Mail, Phone, Building2, User, Calendar, MessageSquare } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -21,10 +21,15 @@ export default function AdminMessages() {
   const { toast } = useToast();
 
   const fetchMessages = () => {
-    apiFetch("/contact")
-      .then((r) => r.json())
-      .then((data) => { setMessages(data); setLoading(false); })
-      .catch(() => setLoading(false));
+    apiJson<ContactMessage[]>("/contact")
+      .then((data) => {
+        setMessages(Array.isArray(data) ? data : []);
+        setLoading(false);
+      })
+      .catch(() => {
+        setMessages([]);
+        setLoading(false);
+      });
   };
 
   useEffect(() => { fetchMessages(); }, []);
